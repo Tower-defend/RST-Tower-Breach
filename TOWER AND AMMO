@@ -1,0 +1,75 @@
+import pygame
+
+
+pygame.init()
+
+
+display_width = 699
+display_height = 519
+
+screen = pygame.display.set_mode((display_width,display_height))
+pygame.display.set_caption('Tower Defense')
+icon = pygame.image.load('monkey.png')
+background = pygame.image.load('map2.png')
+pygame.display.set_icon(icon)
+
+black = (0,0,0)
+white = (255,255,255)
+red = (255,0,0)
+green = (0,255,0)
+blue = (0,0,255)
+
+clock = pygame.time.Clock()
+running = True
+
+tower1 = pygame.image.load('rook.png')
+bullet1 = pygame.image.load('bullet.png')
+
+class towers():      #class of all towers
+    def __init__(self, x, y, radius):
+        self.x = x
+        self.y = y
+        self.radius = radius
+    def rook(self):       
+        pygame.draw.circle(screen, blue, (self.x+16,self.y+16),self.radius, 1)
+        screen.blit(tower1,(self.x, self.y))
+
+
+class ammos():      #Class of all ammo/bullets/owie thingies
+    def __init__(self, x, y, ogx, ogy, speed, radius):
+        self.x = x
+        self.y = y
+        self.ogx = ogx
+        self.ogy = ogy
+        self.radius = radius
+        self.speed = speed
+    def bullet(self):
+        screen.blit(bullet1,(self.x, self.y))
+
+        self.x += self.speed     
+        if self.x > self.radius+16:
+            self.x = self.ogx
+
+
+        
+xc = 100
+yc = 250
+r = 200
+t1 = towers(xc,yc,r)
+b1 = ammos(xc,yc,xc,yc,7,r)
+
+
+
+while running:
+    screen.blit(background,(0,0)) #sets the background
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    t1.rook()
+    b1.bullet()
+    pygame.display.update()
+    clock.tick(60)
+
+
+pygame.quit()
+quit()
