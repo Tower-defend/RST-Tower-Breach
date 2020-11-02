@@ -9,7 +9,7 @@ display_height = 519
 
 screen = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('Tower Defense')
-icon = pygame.image.load('monkey.png')
+icon = pygame.image.load('rook.png')
 background = pygame.image.load('map2.png')
 pygame.display.set_icon(icon)
 
@@ -23,7 +23,7 @@ clock = pygame.time.Clock()
 running = True
 
 tower1 = pygame.image.load('rook.png')
-bullet1 = pygame.image.load('bullet.png')
+#bullet1 = pygame.image.load('bullet.png')
 
 class towers():      #class of all towers
     def __init__(self, x, y, radius):
@@ -36,27 +36,31 @@ class towers():      #class of all towers
 
 
 class ammos():      #Class of all ammo/bullets/owie thingies
-    def __init__(self, x, y, ogx, ogy, speed, radius):
+    def __init__(self, x, y, ogx, ogy, speed, radius, size):
         self.x = x
         self.y = y
         self.ogx = ogx
         self.ogy = ogy
         self.radius = radius
         self.speed = speed
+        self.size = size
     def bullet(self):
-        screen.blit(bullet1,(self.x, self.y))
+        pygame.draw.circle(screen, black, (self.x+16,self.y+16),self.size, 1)
 
-        self.x += self.speed     
-        if self.x > self.radius+16:
+        self.y -= self.speed
+        self.x -= self.speed
+        if self.x > self.ogx+self.radius or self.x < self.ogx -self.radius or self.y > self.ogy+self.radius or self.y < self.ogy -self.radius:
             self.x = self.ogx
+            self.y = self.ogy
 
 
         
-xc = 100
-yc = 250
+x = 250
+y = 250
 r = 200
-t1 = towers(xc,yc,r)
-b1 = ammos(xc,yc,xc,yc,7,r)
+s = 2
+t1 = towers(x,y,r)
+b1 = ammos(x,y,x,y,7,r,s)
 
 
 
@@ -73,3 +77,4 @@ while running:
 
 pygame.quit()
 quit()
+
