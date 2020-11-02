@@ -1,0 +1,80 @@
+import pygame   # Imports
+import random
+import math
+import time
+
+pygame.init()
+
+screen = pygame.display.set_mode((699,519)) # Declares screen and background
+background = pygame.image.load("map2.png")
+
+pygame.display.set_caption("Tower Defense") # Declares caption and image
+icon = pygame.image.load("slime.png")
+pygame.display.set_icon(icon)
+
+alieng = pygame.image.load("monster.png")    # Declares monster image
+lives = 150
+
+running = True
+
+class enemy():          # Class of all enemies
+    def __init__(self, x, y, speedx, speedy, health): # Method declares x, y cords + speed + health
+        self.x = x
+        self.y = y
+        self.speedx = speedx
+        self.speedy = speedy
+        self.health = health            # Declares x, y cords + speed + health
+        
+    def move(self, monster):
+        screen.blit(monster,(self.x, self.y))   # Blit the monster and set speeds
+        self.x += self.speedx
+        self.y += self.speedy
+
+    def direction(self): # Set up all different conditions so no overlap occurs
+        if self.x < 24 and self.speedy == 0.00001:
+            self.speedx = self.speedx * 0.00001
+            self.speedy = self.speedy * 100000
+        if self.y > 188 and self.speedx == -0.00001:
+            self.speedx = self.speedx * -100000
+            self.speedy = self.speedy * 0.0001
+        if self.x > 652 and self.speedy == 0.0001:
+            self.speedx = self.speedx * 0.0001
+            self.speedy = self.speedy * 10000
+        if self.y > 328 and self.speedx == 0.0001:
+            self.speedx = self.speedx * -10000
+            self.speedy = self.speedy * 0.000001
+        if self.x < 24 and self.speedy == 0.000001:
+            self.speedx = self.speedx * 0.0000001
+            self.speedy = self.speedy * 1000000
+        if self.y > 430 and self.speedx == -0.0000001:
+            self.speedx = self.speedx * -10000000
+            self.speedy = 0
+
+def wave1(self):
+        enemies = []
+        wavelen = 50
+        counter = 800
+        for i in range(wavelen): # For amount of monsters in wave
+            e1 = enemy(counter, 78, -1, 0.00001, 1) # Declares object of enemy at end of map
+            self.enemies.append(e1) # Puts object into a list
+            counter += 32 # increases x cord further off the map
+        
+
+while running:
+    screen.blit(background,(0,0))       # Sets background to level map
+    
+    for event in pygame.event.get():    # Checks if event is activated
+        if event.type == pygame.QUIT:   # and quits if so 
+            running = False
+
+    wave1()
+    for e1 in enemies[:]: # For enemies in copy of list 
+        e1.move(alieng) # Blit and makes enemies move from method
+        enemy.direction(e1) # Declares enemy's direction from method
+        if e1.y > 400 and e1.x > 666: # Checks if enemy is at the end of path
+            lives -= 1 # Decreses lives
+            enemies.remove(e1) # Removes enemy from list 
+    
+    pygame.display.update()
+    
+pygame.quit()
