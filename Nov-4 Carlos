@@ -41,27 +41,40 @@ class Towers(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = self.x
         self.rect.centery = self.y
-    def shoot(self):
-        bullet = ammos(self.rect.centerx, self.rect.top,self.rect.centerx, self.rect.top,5,10) 
-        all_sprites.add(bullet)
-        bullets.add(bullets)
+
+    #def shoot(self):
+         
+        for i in range(8):
+            xx = i*20
+            bullet = ammos(self.rect.centerx + xx, self.rect.top + xx,self.rect.centerx + xx, self.rect.top + xx,5,10)
+            all_sprites.add(bullet)
+            ammos.add(bullet)
 #~~~~~~~~~~~~~~
+
 class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
     def __init__(self, x, y, ogx, ogy, speed, size):
         pygame.sprite.Sprite.__init__(self)
+#~~~~~~~~~~~~~~~~~~~~
         self.x = x
         self.y = y
         self.ogx = ogx
         self.ogy = ogy
         self.speed = speed
         self.size = size
-        pygame.draw.circle(screen, BLACK, (self.x+16,self.y+16),self.size, 1)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.image = pygame.Surface((10, 10))
+        self.image.fill(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
 
-        self.y -= self.speed
-        self.x -= self.speed
+    def update(self):
+        self.rect.centerx -= self.speed
+        self.rect.centery -= self.speed
        # if self.x > self.ogx+self.radius or self.x < self.ogx -self.radius or self.y > self.ogy+self.radius or self.y < self.ogy -self.radius:
            # self.x = self.ogx
            # self.y = self.ogy
+
 #~~~~~~~~~~~~~~~~~~~~~
 #Loading Game Graphics
         
@@ -69,19 +82,23 @@ background = pygame.image.load(path.join(img_dir, "map2.png")).convert()
 background_rect = background.get_rect()
 tower_img = pygame.image.load(path.join(img_dir, "tank.png")).convert()
 
+xc = WIDTH/2
+yc = HEIGHT* 3/4  #
+s = 50 #scale of the tower (lengthx width cause square)
+speed = 5
+size = 10
 
 all_sprites = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 
-xc = WIDTH/2
-yc = HEIGHT* 3/4  #
-s = 50 #scale of the tower (lengthx width cause square)
 tower = Towers(xc,yc,s)
 all_sprites.add(tower)
-speed = 5
-size = 10
-bullet = ammos(xc,yc,xc,yc,speed,size)
-all_sprites.add(tower)
+
+    
+#bullet = ammos(xc,yc,xc,yc,speed,size)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Game loop
 running = True
 while running:
@@ -106,4 +123,3 @@ while running:
     pygame.display.flip()
 
 pygame.quit()
-
