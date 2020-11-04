@@ -1,9 +1,21 @@
 import pygame   # Imports
 import random
 import math
+import time
+
+pygame.init()
+
+screen = pygame.display.set_mode((800,519)) # Declares screen and background
+background = pygame.image.load("map2.png")
+
+pygame.display.set_caption("Tower Defense") # Declares caption and image
+icon = pygame.image.load("slime.png")
+pygame.display.set_icon(icon)
+
+alieng = pygame.image.load("monster.png")    # Declares monster image
+lives = 150
 
 running = True
-lives = 150
 
 class enemy():          # Class of all enemies
     def __init__(self, x, y, speedx, speedy, health): # Method declares x, y cords + speed + health
@@ -37,16 +49,26 @@ class enemy():          # Class of all enemies
         if self.y > 430 and self.speedx == -0.0000001:
             self.speedx = self.speedx * -10000000
             self.speedy = 0
+            
+enemies = []
 
-enemies = [] # Creates list of enemies
-wavelen = 50 # Make the wave only 50 enemies
-counter = 800
-for i in range(wavelen): # For amount of monsters in wave
-    e1 = enemy(counter, 78, -1, 0.00001, 1) # Declares object of enemy at end of map
-    enemies.append(e1) # Puts object into a list
-    counter += 32 # increases x cord further off the map
+def wave1():
+    wavelen = 50
+    counter = 800
+    for i in range(wavelen): # For amount of monsters in wave
+        e1 = enemy(counter, 78, -1, 0.00001, 1) # Declares object of enemy at end of map
+        enemies.append(e1) # Puts object into a list
+        counter += 32 # increases x cord further off the map
+        
+wave1()
 
 while running:
+    screen.blit(background,(0,0))       # Sets background to level map
+    
+    for event in pygame.event.get():    # Checks if event is activated
+        if event.type == pygame.QUIT:   # and quits if so 
+            running = False
+
     for e1 in enemies[:]: # For enemies in copy of list 
         e1.move(alieng) # Blit and makes enemies move from method
         enemy.direction(e1) # Declares enemy's direction from method
@@ -54,3 +76,6 @@ while running:
             lives -= 1 # Decreses lives
             enemies.remove(e1) # Removes enemy from list 
     
+    pygame.display.update()
+    
+pygame.quit()
