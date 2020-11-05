@@ -161,9 +161,10 @@ def wave1():
         counter += 32 # increases x cord further off the map
         
 wave1()
+xdistance = 0
+ydistance = 0
 xspeed = 0
 yspeed = 0
-
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Game loop
@@ -205,9 +206,12 @@ while running:
             enemies.remove(e1) # Removes enemy from list
         if math.sqrt((e1.x - tower.x)**2 + (e1.y - tower.y)**2) < 200: # Checks range between enemy and tower
             target.append(e1)
-            yspeed = target[0].x - tower.x 
-            xspeed = target[0].y - tower.y
-            # Create ammo here instead of in the method 
+            xdistance = target[0].x - tower.x  # Find x distance and y dis
+            ydistance = target[0].y - tower.y
+            angle = math.atan2(ydistance, xdistance) # Find angle created
+            xspeed = SPEED * math.cos(angle) # declare the x and y speeds
+            yspeed = SPEED * math.sin(angle)
+            # Create ammo here instead of in the method and set x + y speed
             tower.shoot()
     
                 
