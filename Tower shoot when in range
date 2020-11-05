@@ -53,15 +53,15 @@ class Towers(pygame.sprite.Sprite):
 
 
     def shoot(self):
-        bullet = ammos(self.rect.centerx, self.rect.top,self.rect.centerx, self.rect.top,5,5,10)
         all_sprites.add(bullet)
         bullets.add(bullet)
 #~~~~~~~~~~~~~~
 
-class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
+class ammos(Towers, pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
     def __init__(self, x, y, ogx, ogy, speedx, speedy, size):
         pygame.sprite.Sprite.__init__(self)
 #~~~~~~~~~~~~~~~~~~~~
+        super().__init__(x, y, s)
         self.x = x
         self.y = y
         self.ogx = ogx
@@ -165,6 +165,7 @@ xdistance = 0
 ydistance = 0
 xspeed = 0
 yspeed = 0
+SPEED = 5
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Game loop
@@ -204,14 +205,14 @@ while running:
         if e1.y > 400 and e1.x > 666: # Checks if enemy is at the end of path
             lives -= 1 # Decreses lives
             enemies.remove(e1) # Removes enemy from list
-        if math.sqrt((e1.x - tower.x)**2 + (e1.y - tower.y)**2) < 200: # Checks range between enemy and tower
+        if math.sqrt((e1.x - tower.x)**2 + (e1.y - tower.y)**2) < 400: # Checks range between enemy and tower
             target.append(e1)
             xdistance = target[0].x - tower.x  # Find x distance and y dis
             ydistance = target[0].y - tower.y
             angle = math.atan2(ydistance, xdistance) # Find angle created
             xspeed = SPEED * math.cos(angle) # declare the x and y speeds
             yspeed = SPEED * math.sin(angle)
-            # Create ammo here instead of in the method and set x + y speed
+           # failed test bullet = tower.ammos(self.rect.centerx, self.rect.top,self.rect.centerx, self.rect.top,xspeed,yspeed,10)
             tower.shoot()
     
                 
