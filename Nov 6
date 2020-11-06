@@ -1,0 +1,208 @@
+import pygame   # Imports
+import random
+import math
+import time
+from os import path
+
+#Image Upload Path
+img_dir = path.join(path.dirname(__file__), 'img')
+
+#Defining Initialized Variables
+
+WIDTH = 699
+HEIGHT = 519
+FPS = 60
+
+# define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+
+# initialize pygame and create window
+pygame.init()
+pygame.mixer.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Tower Defence")
+clock = pygame.time.Clock()
+
+#Setting Icon_____________________________________________________________
+#icon = pygame.image.load("slime.png")
+#pygame.display.set_icon(icon)
+
+#__________________Defining Classes__________________________________________
+class dummy(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.centery = 50
+        self.rect.centerx = WIDTH/2
+        
+class Towers(pygame.sprite.Sprite):
+    def __init__(self,x,y,s):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.s = s
+        self.image = pygame.transform.scale(tower_img, (self.s,self.s))
+        self.image.set_colorkey(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+        self.radius = 50
+
+
+    def shoot(self):
+        bullet = ammos(self.rect.centerx, self.rect.top,self.rect.centerx, self.rect.top,5,10)
+        
+        all_sprites.add(bullet)
+        bullets.add(bullet)
+        
+class enemy(pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.speedx = speedx
+        self.speedy = speedy
+        self.health = health
+        self.image = pygame.transform.scale(aliengreen_img, (40,40))
+        self.image.set_colorkey(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y       
+        print("alien")
+        
+    def update(self): # Set up all different conditions so no overlap occurs
+       # print("update")
+        
+        if self.rect.centerx < 43 and self.speedy == 0.00001:
+            self.speedx = self.speedx * 0.00001
+            self.speedy = self.speedy * 100000
+        if self.rect.centery > 188 and self.speedx == -0.00001:
+            self.speedx = self.speedx * -100000
+            self.speedy = self.speedy * 0.0001
+        if self.rect.centerx > 652 and self.speedy == 0.0001:
+            self.speedx = self.speedx * 0.0001
+            self.speedy = self.speedy * 10000
+        if self.rect.centery > 328 and self.speedx == 0.0001:
+            self.speedx = self.speedx * -10000
+            self.speedy = self.speedy * 0.000001
+        if self.rect.centerx < 43 and self.speedy == 0.000001:
+            self.speedx = self.speedx * 0.0000001
+            self.speedy = self.speedy * 1000000
+        if self.rect.centery > 430 and self.speedx == -0.0000001:
+            self.speedx = self.speedx * -10000000
+            self.speedy = 0
+        #~~~~~~~~~~~~~~~~~~Moving the enemy~~~~~~
+       
+        self.rect.centerx += self.speedx
+        self.rect.centery += self.speedy
+
+class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
+    def __init__(self, x, y, ogx, ogy, speed, size):
+        pygame.sprite.Sprite.__init__(self)
+#~~~~~~~~~~~~~~~~~~~~
+        self.x = x
+        self.y = y
+        self.ogx = ogx
+        self.ogy = ogy
+        #self.speedx = speedx
+        #self.speedy = speedy
+        self.speed = speed
+        self.size = size
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.image = pygame.Surface((10, 10))
+        self.image.fill(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self):
+        #self.rect.centerx -= self.speedx
+        #self.rect.centery -= self.speedy
+        self.rect.centery -= self.speed
+        
+        if self.rect.bottom < 0 or self.rect.top > 519 or self.rect.left > 699 or self.rect.right < 0:
+            self.kill()
+            print("dead")      
+
+#________________Loading Graphics___________________________________
+background = pygame.image.load(path.join(img_dir, "map2.png")).convert()
+background_rect = background.get_rect()
+aliengreen_img = pygame.image.load(path.join(img_dir, "monster.png")).convert()
+tower_img = pygame.image.load(path.join(img_dir, "tank.png")).convert()
+
+
+#_____________Defining Variables for Classes________________________
+wavelen = 10
+counter = 800
+
+#_______________________________________________________
+
+xc = WIDTH/2
+yc = HEIGHT* 3/4  #
+s = 50 #scale of the tower (lengthx width cause square)
+speed = 5
+size = 10
+
+
+#Defining the Calls___________________________
+dumb = dummy()
+tower = Towers(xc,yc,s)
+#Creating Sprite Groups_____________________
+all_sprites = pygame.sprite.Group()
+enemies = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+towers = pygame.sprite.Group()
+
+
+all_sprites.add(tower)
+towers.add(tower)
+
+all_sprites.add(dumb)
+
+
+#_________________GAME LOOP___________________________________
+running = True
+
+while running:
+    clock.tick(FPS)
+
+    #Procesing Events~~~~~~~~~~~~~~
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:  
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                for i in range(wavelen):   
+                    alieng = enemy(counter, 78, -1, 0.00001, 1)
+                    all_sprites.add(alieng)
+                    enemies.add(alieng)
+                    counter += 40
+            if event.key == pygame.K_UP:
+                tower.shoot()
+                
+
+    #Background First ~~~~~~~~~~~~~~~~~~
+    screen.blit(background, background_rect)
+    
+    enemyhits = pygame.sprite.groupcollide(bullets, enemies, True, True)
+    if enemyhits:
+        pass
+        
+
+
+
+    #~~~~~Update~~~~~~~~~~~~~
+    all_sprites.update()
+   #Draw~~~~~~~~~~~~~~~~~~
+    all_sprites.draw(screen)
+
+    pygame.display.flip()
+pygame.quit()
