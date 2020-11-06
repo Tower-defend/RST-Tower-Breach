@@ -11,7 +11,7 @@ img_dir = path.join(path.dirname(__file__), 'img')
 
 WIDTH = 699
 HEIGHT = 519
-FPS = 60
+FPS = 240
 
 # define colors
 WHITE = (255, 255, 255)
@@ -54,13 +54,18 @@ class Towers(pygame.sprite.Sprite):
         self.rect.centerx = self.x
         self.rect.centery = self.y
         self.radius = 200
-
+        self.timer = 0
+        self.attack_speed = 100 #.5 seconds
 
     def shoot(self):
         bullet = ammos(self.rect.centerx, self.rect.top,self.rect.centerx, self.rect.top,5,10)
+        self.timer += dt
+        if self.timer >= self.attack_speed:
+            self.timer -= self.attack_speed
+            all_sprites.add(bullet)
+            bullets.add(bullet)
         
-        all_sprites.add(bullet)
-        bullets.add(bullet)
+
         
 class enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, speedx, speedy, health):
@@ -77,7 +82,7 @@ class enemy(pygame.sprite.Sprite):
         self.rect.centery = self.y       
         print("alien")
         
-    def update(self): # Set up all different conditions so no overlap occurs
+    def update(self,dt): # Set up all different conditions so no overlap occurs
        # print("update")
         
         if self.rect.centerx < 36 and self.speedy == 0.00001:
@@ -122,7 +127,7 @@ class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
         self.rect.centerx = self.x
         self.rect.centery = self.y
 
-    def update(self):
+    def update(self,dt):
         #self.rect.centerx -= self.speedx
         #self.rect.centery -= self.speedy
         self.rect.centery -= self.speed
@@ -141,6 +146,8 @@ tower_img = pygame.image.load(path.join(img_dir, "tank.png")).convert()
 #_____________Defining Variables for Classes________________________
 wavelen = 10
 counter = 800
+#_______________________________________________
+
 
 #_______________________________________________________
 
@@ -172,6 +179,7 @@ running = True
 
 while running:
     clock.tick(FPS)
+    dt = clock.tick(FPS)
 
     #Procesing Events~~~~~~~~~~~~~~
     
@@ -204,7 +212,7 @@ while running:
 
 
     #~~~~~Update~~~~~~~~~~~~~
-    all_sprites.update()
+    all_sprites.update(dt)
    #Draw~~~~~~~~~~~~~~~~~~
     all_sprites.draw(screen)
 
