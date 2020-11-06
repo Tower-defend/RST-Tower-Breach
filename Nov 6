@@ -53,7 +53,7 @@ class Towers(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = self.x
         self.rect.centery = self.y
-        self.radius = 50
+        self.radius = 200
 
 
     def shoot(self):
@@ -195,6 +195,10 @@ while running:
     enemyhits = pygame.sprite.groupcollide(bullets, enemies, True, True)
     if enemyhits:
         pass
+#Testing Rnage________________________________________________________
+    towerRange = pygame.sprite.groupcollide(towers, enemies, False, False, pygame.sprite.collide_circle)
+    if towerRange:
+        tower.shoot()
         
 
 
