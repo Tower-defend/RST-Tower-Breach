@@ -41,7 +41,7 @@ class enemy(pygame.sprite.Sprite):
         self.speedx = speedx
         self.speedy = speedy
         self.health = health
-        self.image = pygame.transform.scale(aliengreen_img, (40,40))
+        self.image = pygame.transform.scale(aliengreen_img, (32,32))
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.x
@@ -51,27 +51,26 @@ class enemy(pygame.sprite.Sprite):
     def update(self): # Set up all different conditions so no overlap occurs
        # print("update")
         
-        if self.rect.centerx < 24 and self.speedy == 0.00001:
-            self.speedx = self.speedx * 0.00001
-            self.speedy = self.speedy * 100000
-        if self.rect.centery > 188 and self.speedx == -0.00001:
-            self.speedx = self.speedx * -100000
-            self.speedy = self.speedy * 0.0001
-        if self.rect.centerx > 652 and self.speedy == 0.0001:
-            self.speedx = self.speedx * 0.0001
-            self.speedy = self.speedy * 10000
-        if self.rect.centery > 328 and self.speedx == 0.0001:
-            self.speedx = self.speedx * -10000
-            self.speedy = self.speedy * 0.000001
-        if self.rect.centerx < 24 and self.speedy == 0.000001:
-            self.speedx = self.speedx * 0.0000001
-            self.speedy = self.speedy * 1000000
-        if self.rect.centery > 430 and self.speedx == -0.0000001:
-            self.speedx = self.speedx * -10000000
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1
             self.speedy = 0
         #~~~~~~~~~~~~~~~~~~Moving the enemy~~~~~~
-       
-        
+            
         self.rect.centerx += self.speedx
         self.rect.centery += self.speedy
         
@@ -99,7 +98,7 @@ enemies = pygame.sprite.Group()
 running = True
 
 while running:
-    clock.tick(FPS)
+    clock.tick(120)
 
     #Procesing Events~~~~~~~~~~~~~~
     
@@ -109,10 +108,10 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 for i in range(wavelen):   
-                    alieng = enemy(counter, 78, -1, 0.00001, 1)
+                    alieng = enemy(counter, 92, -1, 0.00001, 1)
                     all_sprites.add(alieng)
                     enemies.add(alieng)
-                    counter += 40
+                    counter += 32
                 
 
     #Background First ~~~~~~~~~~~~~~~~~~
