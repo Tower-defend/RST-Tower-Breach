@@ -80,23 +80,23 @@ class enemy(pygame.sprite.Sprite):
     def update(self): # Set up all different conditions so no overlap occurs
        # print("update")
         
-        if self.rect.centerx < 43 and self.speedy == 0.00001:
-            self.speedx = self.speedx * 0.00001
-            self.speedy = self.speedy * 100000
-        if self.rect.centery > 188 and self.speedx == -0.00001:
-            self.speedx = self.speedx * -100000
-            self.speedy = self.speedy * 0.0001
-        if self.rect.centerx > 652 and self.speedy == 0.0001:
-            self.speedx = self.speedx * 0.0001
-            self.speedy = self.speedy * 10000
-        if self.rect.centery > 328 and self.speedx == 0.0001:
-            self.speedx = self.speedx * -10000
-            self.speedy = self.speedy * 0.000001
-        if self.rect.centerx < 43 and self.speedy == 0.000001:
-            self.speedx = self.speedx * 0.0000001
-            self.speedy = self.speedy * 1000000
-        if self.rect.centery > 430 and self.speedx == -0.0000001:
-            self.speedx = self.speedx * -10000000
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1
             self.speedy = 0
         #~~~~~~~~~~~~~~~~~~Moving the enemy~~~~~~
        
