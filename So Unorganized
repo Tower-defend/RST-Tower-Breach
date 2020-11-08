@@ -72,6 +72,8 @@ enemies = pygame.sprite.Group()
 towers = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 
+target = []
+
 
 
 #__________________Defining Classes__________________________________________
@@ -285,10 +287,17 @@ while running:
     #Collisions________________________________________
     enemyhits = pygame.sprite.groupcollide(bullets, enemies, True, True)
     towerRange = pygame.sprite.groupcollide(towers, enemies, False, False, pygame.sprite.collide_circle)
+ 
+    enemyhits = pygame.sprite.groupcollide(bullets, enemies, True, True)
+    towerRange = pygame.sprite.groupcollide(towers, enemies, False, False, pygame.sprite.collide_circle)
     if towerRange:
-        xenemy = greenalien.xcoordinates
-        print("maybe")
-        tower.shoot(mousex,mousey,speed,size)
+        for i in enemies:
+            target.append(i)
+            enemyx = i.rect.centerx
+            enemyy = i.rect.centery
+        tower.shoot(enemyx,enemyy,speed,size)
+
+
         
     
     #~~~~~Update~~~~~~~~~~~~~    screen.blit(background, background_rect)
