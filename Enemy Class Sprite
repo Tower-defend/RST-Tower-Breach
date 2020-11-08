@@ -10,7 +10,7 @@ img_dir = path.join(path.dirname(__file__), 'img')
 #Defining Initialized Variables
 
 WIDTH = 699
-HEIGHT = 519
+HEIGHT = 600
 FPS = 60
 
 # define colors
@@ -28,11 +28,54 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Tower Defence")
 clock = pygame.time.Clock()
 
+lives = 150
+pygame.font.init()
+myfont = pygame.font.SysFont(None, 30)
+
 #Setting Icon_____________________________________________________________
 icon = pygame.image.load("slime.png")
 pygame.display.set_icon(icon)
 
+#________________Loading Graphics___________________________________
+background = pygame.image.load(path.join(img_dir, "map2.png")).convert()
+background_rect = background.get_rect()
+
+tan_background = pygame.image.load(path.join(img_dir, "wood1.jpg")).convert()
+tan_background = pygame.transform.scale(tan_background, (699, 600))
+tan_background_rect = tan_background.get_rect()
+
+aliengreen_img = pygame.image.load(path.join(img_dir, "monster.png")).convert()
+
+start_button = pygame.image.load(path.join(img_dir, "button.png")).convert()
+button_pressed = pygame.image.load(path.join(img_dir, "button_pressed.png")).convert()
+#_____________Defining Variables for Classes________________________
+counter = 800
+can_move = False
+can_add = True
+#_______________________________________________________
+#Defining the Calls
+#Creating Sprite Groups
+icons = pygame.sprite.Group()
+buttons = pygame.sprite.Group()
+enemies = pygame.sprite.Group()
+
 #__________________Defining Classes__________________________________________
+class button(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.image = pygame.transform.scale(start_button, (64, 32))
+        self.rect = self.image.get_rect()
+        self.image.set_colorkey(WHITE)
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def pressed(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(button_pressed, (64, 32))
+        self.image.set_colorkey(WHITE)
+        
 class enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, speedx, speedy, health):
         pygame.sprite.Sprite.__init__(self)
@@ -41,12 +84,18 @@ class enemy(pygame.sprite.Sprite):
         self.speedx = speedx
         self.speedy = speedy
         self.health = health
+        self.image = None
+
+class greenalien(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        super().__init__(x, y, speedx, speedy, health)
+        pygame.sprite.Sprite.__init__(self)
+        
         self.image = pygame.transform.scale(aliengreen_img, (32,32))
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.x
-        self.rect.centery = self.y       
-        print("alien")
+        self.rect.centery = self.y
         
     def update(self): # Set up all different conditions so no overlap occurs
        # print("update")
@@ -69,57 +118,73 @@ class enemy(pygame.sprite.Sprite):
         if self.rect.centery > 438 and self.speedx == 0.0000001:
             self.speedx = 1
             self.speedy = 0
-        #~~~~~~~~~~~~~~~~~~Moving the enemy~~~~~~
             
-        self.rect.centerx += self.speedx
-        self.rect.centery += self.speedy
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= 1
+            self.health = 0
+            
+        if self.health <= 0:
+            self.kill()
+        #~~~~~~~~~~~~~~~~~~Moving the enemy~~~~~~
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
         
+class icon(pygame.sprite.Sprite):
+    pass
 
-#________________Loading Graphics___________________________________
-background = pygame.image.load(path.join(img_dir, "map2.png")).convert()
-background_rect = background.get_rect()
-aliengreen_img = pygame.image.load(path.join(img_dir, "monster.png")).convert()
+icong = greenalien(550, 550, 0, 0, 1)
+icons.add(icong)
 
-#_____________Defining Variables for Classes________________________
-wavelen = 10
-counter = 800
-
-#_______________________________________________________
-#Defining the Calls
-
-
-#Creating Sprite Groups
-all_sprites = pygame.sprite.Group()
-enemies = pygame.sprite.Group()
-
+buttonStart = button(32, 550)
+buttons.add(buttonStart)
 
 
 #_________________GAME LOOP___________________________________
 running = True
 
 while running:
-    clock.tick(120)
+    clock.tick(500)
+    text_lives = myfont.render('Lives : %d' % lives, False, (0, 0, 0))
+    
+    if not enemies:
+        can_move = False
+        can_add = True
+        counter = 800
 
     #Procesing Events~~~~~~~~~~~~~~
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                for i in range(wavelen):   
-                    alieng = enemy(counter, 92, -1, 0.00001, 1)
-                    all_sprites.add(alieng)
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            x, y = event.pos
+            print(x, y)
+            if icong.rect.collidepoint(x, y):
+                if can_add == True:
+                    alieng = greenalien(counter, 92, -1, 0.00001, 1)
                     enemies.add(alieng)
                     counter += 32
-                
+                    
+            if buttonStart.rect.collidepoint(x, y):
+                can_move = True
+                can_add = False
+                buttonStart.pressed()
+
 
     #Background First ~~~~~~~~~~~~~~~~~~
+    screen.blit(tan_background, background_rect)
     screen.blit(background, background_rect)
-    #~~~~~Update~~~~~~~~~~~~~
-    all_sprites.update()
+    screen.blit(text_lives,(0,580))
+    #~~~~~Update~~~~~~~~~~~~~    screen.blit(background, background_rect)
+    enemies.update()
+    buttons.update()
    #Draw~~~~~~~~~~~~~~~~~~
-    all_sprites.draw(screen)
-
+    icons.draw(screen)
+    enemies.draw(screen)
+    buttons.draw(screen)
+    
     pygame.display.flip()
 pygame.quit()
