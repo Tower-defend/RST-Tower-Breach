@@ -171,7 +171,7 @@ class Towers(pygame.sprite.Sprite):
         self.rect.centery = self.y
         self.radius = 200
         self.timer = 0
-        self.attack_speed = 100 #.5 seconds delay ebtween shots
+        self.attack_speed = 300 #.5 seconds delay ebtween shots
     def shoot(self,mousex,mousey,speed,size):
         self.mousex = mousex
         self.mousey = mousey
@@ -224,7 +224,6 @@ class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
 
         self.rect.center = (self.x,self.y)
         
-
         if self.rect.bottom < 0 or self.rect.top > 519 or self.rect.left > 699 or self.rect.right < 0:
             self.kill()
             #print("dead")  
@@ -294,6 +293,12 @@ while running:
         enemyx = target[0].rect.centerx
         enemyy = target[0].rect.centery
         tower.shoot(enemyx,enemyy,speed,size)
+    for e in target:
+        if enemyhits:
+            target.remove(e)
+        if not towerRange:
+            target.remove(e)
+
     
     #~~~~~Update~~~~~~~~~~~~~    screen.blit(background, background_rect)
     enemies.update()
