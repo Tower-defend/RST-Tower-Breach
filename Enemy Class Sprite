@@ -31,6 +31,10 @@ clock = pygame.time.Clock()
 lives = 150
 monster_count1 = 0
 monster_count2 = 0
+monster_count3 = 0
+monster_count4 = 0
+monster_count5 = 0
+
 pygame.font.init()
 myfont = pygame.font.SysFont(None, 30)
 costfont = pygame.font.SysFont(None, 20)
@@ -47,8 +51,11 @@ tan_background = pygame.image.load(path.join(img_dir, "wood1.jpg")).convert()
 tan_background = pygame.transform.scale(tan_background, (699, 600))
 tan_background_rect = tan_background.get_rect()
 
+blue_mob = pygame.image.load(path.join(img_dir, "blue_monster.png")).convert()
 green_mob = pygame.image.load(path.join(img_dir, "green_monster.png")).convert()
 red_mob = pygame.image.load(path.join(img_dir, "red_monster.png")).convert()
+dark_mob = pygame.image.load(path.join(img_dir, "dark_monster.png")).convert()
+ice_mob = pygame.image.load(path.join(img_dir, "ice_monster.png")).convert()
 
 start_button = pygame.image.load(path.join(img_dir, "button.png")).convert()
 button_pressed = pygame.image.load(path.join(img_dir, "button_pressed.png")).convert()
@@ -172,7 +179,7 @@ class red_monster(enemy, pygame.sprite.Sprite):
         if self.rect.centerx > 699 and self.rect.centery > 400:
             global lives # Declares lives as global variable 
             lives -= self.health
-            self.health = 0
+            self.kill()
             
         if self.health <= 0:
             self.kill()
@@ -180,6 +187,147 @@ class red_monster(enemy, pygame.sprite.Sprite):
         if can_move == True:
             self.rect.centerx += self.speedx
             self.rect.centery += self.speedy
+
+class blue_monster(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        super().__init__(x, y, speedx, speedy, health)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(blue_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self):
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1.1
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1.2
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1.1
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1.1
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1.1
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1.1
+            self.speedy = 0
+            
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= self.health
+            self.kill()
+            
+        if self.health <= 0:
+            redM = red_monster(self.rect.centerx, self.rect.centery, -1.2, 0.00001, 2)
+            enemies.add(redM)
+            greenM = green_monster(self.rect.centerx -32, self.rect.centery, -1, 0.00001, 1)
+            enemies.add(greenM)
+            self.kill()
+
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
+
+class dark_monster(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        super().__init__(x, y, speedx, speedy, health)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(dark_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self): # Set up all different conditions so no overlap occurs
+       # print("update")
+        
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1
+            self.speedy = 0
+
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= self.health
+            self.kill()
+
+        if self.health <= 0:
+            redM = red_monster(self.rect.centerx, self.rect.centery, -1.2, 0.00001, 2)
+            enemies.add(redM)
+            blueM = blue_monster(self.rect.centerx - 32, self.rect.centery, -1.2, 0.00001, 1)
+            enemies.add(blueM)
+            self.kill()
+
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
+
+class ice_monster(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        super().__init__(x, y, speedx, speedy, health)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(ice_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+        
+    def update(self): # Set up all different conditions so no overlap occurs
+       # print("update")
+        
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1.5
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1.5
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1.5
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1.5
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1.5
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1.5
+            self.speedy = 0
+
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
+
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= self.health
+            self.kill()
+
+        if self.health <= 0:
+            self.kill()
         
 class icon(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -210,11 +358,53 @@ class red_icon(icon, pygame.sprite.Sprite):
         self.rect.centerx = self.x
         self.rect.centery = self.y
 
+class blue_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(blue_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+        
+class dark_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(dark_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+class ice_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(ice_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
 icong = green_icon(150, 560)
 icons.add(icong)
 
-iconr = red_icon(210, 560)
+iconr = red_icon(200, 560)
 icons.add(iconr)
+
+iconb = blue_icon(250, 560)
+icons.add(iconb)
+
+icond = dark_icon(300, 560)
+icons.add(icond)
+
+iconi = ice_icon(350, 560)
+icons.add(iconi)
 
 buttonStart = button(32, 550)
 buttons.add(buttonStart)
@@ -227,6 +417,10 @@ while running:
     text_lives = myfont.render('Lives : %d' % lives, False, (RED))
     text_monster1 = myfont.render('%d' % monster_count1, False, (0, 0, 0))
     text_monster2 = myfont.render('%d' % monster_count2, False, (0, 0, 0))
+    text_monster3 = myfont.render("%d" % monster_count3, False, (0, 0, 0))
+    text_monster4 = myfont.render("%d" % monster_count4, False, (0, 0, 0))
+    text_monster5 = myfont.render("%d" % monster_count5, False, (0, 0, 0))
+    
     text_cost1 = myfont.render('%d' % monster_count2, False, (0, 0, 0))
     
     if not enemies:         # if list is empty
@@ -236,6 +430,9 @@ while running:
         buttonStart.start()
         monster_count1 = 0
         monster_count2 = 0
+        monster_count3 = 0
+        monster_count4 = 0
+        monster_count5 = 0
 
     #Procesing Events~~~~~~~~~~~~~~
     
@@ -258,6 +455,24 @@ while running:
                     enemies.add(redM)
                     counter += 32
                     monster_count2 += 1
+            if iconb.rect.collidepoint(x, y):
+                if can_add == True:
+                    blueM = blue_monster(counter, 92, -1.2, 0.00001, 1)
+                    enemies.add(blueM)
+                    counter += 21
+                    monster_count3 += 1
+            if icond.rect.collidepoint(x, y):
+                if can_add == True:
+                    darkM = dark_monster(counter, 92, -1, 0.00001, 3)
+                    enemies.add(darkM)
+                    counter += 32
+                    monster_count4 += 1
+            if iconi.rect.collidepoint(x, y):
+                if can_add == True:
+                    iceM = ice_monster(counter, 92, -1.5, 0.00001, 5)
+                    enemies.add(iceM)
+                    counter += 32
+                    monster_count5 += 1
                     
             if buttonStart.rect.collidepoint(x, y):
                 can_move = True
@@ -271,6 +486,9 @@ while running:
     screen.blit(text_lives,(0,580))
     screen.blit(text_monster1, (icong.rect.centerx + 16, icong.rect.centery + 16))
     screen.blit(text_monster2, (iconr.rect.centerx + 16, iconr.rect.centery + 16))
+    screen.blit(text_monster3, (iconb.rect.centerx + 16, iconr.rect.centery + 16))
+    screen.blit(text_monster4, (icond.rect.centerx + 16, iconr.rect.centery + 16))
+    screen.blit(text_monster5, (iconi.rect.centerx + 16, iconr.rect.centery + 16))
     #~~~~~Update~~~~~~~~~~~~~    screen.blit(background, background_rect)
     enemies.update()
     buttons.update()
