@@ -1,20 +1,23 @@
-# Imports
+#Art from Flaticon
+
+# Imports necirssary modules (hehe lots of typos here, I shall keep this as a code easter egg)
 import pygame  
 import random
 import math
 import time
 from os import path
 
-#Image Upload Path
-img_dir = path.join(path.dirname(__file__), 'img')
+#Image Upload Path_________________________________________________________________________________
+img_dir = path.join(path.dirname(__file__), 'img') #tells program where to upload image files from
+snd_dir = path.join(path.dirname(__file__), 'snd')#tells program where to upload sound files from
 
-#Defining Initialized Variables
+#Defining Initialized Variables_________________________________________________________________________________
 
-WIDTH = 699
-HEIGHT = 600
-FPS = 500
+WIDTH = 699 #pixel width of screen
+HEIGHT = 600#pixel height of screen
+FPS = 120 #frames per second that the program runs
 
-# define colors
+# define colors with RGB_________________________________________________________________________________
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -22,13 +25,14 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
-# initialize pygame and create window
+# initialize pygame and create window_________________________________________________________________________________
 pygame.init()
-pygame.mixer.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Tower Defence")
-clock = pygame.time.Clock()
+pygame.mixer.init() #init sounds
+screen = pygame.display.set_mode((WIDTH, HEIGHT)) #sets display to the variable
+pygame.display.set_caption("Tower Defence") #adds a caption
+clock = pygame.time.Clock() #create a clock function to keep speeds and frames constant
 
+#Creating Variables for the enemies_________________________________________________________________________________
 lives = 150
 monster_count1 = 0
 monster_count2 = 0
@@ -36,6 +40,7 @@ monster_count3 = 0
 monster_count4 = 0
 monster_count5 = 0
 
+#Initializing and adjusting   font and size
 pygame.font.init()
 myfont = pygame.font.SysFont(None, 30)
 costfont = pygame.font.SysFont(None, 20)
@@ -43,6 +48,11 @@ costfont = pygame.font.SysFont(None, 20)
 #Setting Icon_____________________________________________________________
 icon = pygame.image.load("slime.png")
 pygame.display.set_icon(icon)
+
+# Load all game sounds
+pygame.mixer.music.load(path.join(snd_dir, 'music.ogg'))
+pygame.mixer.music.set_volume(2)
+shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
 
 #________________Loading Graphics___________________________________
 background = pygame.image.load(path.join(img_dir, "map2.png")).convert()
@@ -90,7 +100,7 @@ column9 = 9*WIDTH/11
 column10 = 10*WIDTH/11
 
 s = 50 #scale of the tower (lengthx width cause square)
-speed = 5
+speed = 7
 #speed of bullet
 size = 10 #size of bullet (square)
 
@@ -453,6 +463,7 @@ class Towers(pygame.sprite.Sprite):
         if self.timer >= self.attack_speed:
             #print("yes")
             self.timer -= self.attack_speed
+            shoot_sound.play()
             bullets.add(bullet)
             #print("bullet")
 
@@ -517,7 +528,7 @@ def gameLoopPT1():
         if tower1Range:
             enemyx = target[0].rect.centerx
             enemyy = target[0].rect.centery
-            tower1.shoot(enemyx,enemyy,1,10) #(targetx,targety,bullet speed, bullet size)
+            tower1.shoot(enemyx,enemyy,5,10) #(targetx,targety,bullet speed, bullet size)
         for e in target:
             if enemyhits:
                 target.remove(e)
@@ -709,6 +720,8 @@ tower7 = Towers(200,row2y,60,tower7_img)
 #PLacing the first tower
 towers.add(tower1)
 
+#PLaying Background music
+pygame.mixer.music.play(loops=-1)
 #_________________GAME LOOP___________________________________
 running = True
 
@@ -816,3 +829,4 @@ while running:
     
     pygame.display.flip()
 pygame.quit()
+
