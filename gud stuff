@@ -35,16 +35,21 @@ monster_count2 = 0
 monster_count3 = 0
 monster_count4 = 0
 monster_count5 = 0
+monster_count6 = 0
 
 monster_cost1 = 0
 monster_cost2 = 1
 monster_cost3 = 2
 monster_cost4 = 3
 monster_cost5 = 4
+monster_cost6 = 0
+
+player_money = 0 # Change 
 
 pygame.font.init()
-myfont = pygame.font.SysFont(None, 24)
-costfont = pygame.font.SysFont(None, 24)
+myfont = pygame.font.SysFont(None, 20)
+costfont = pygame.font.SysFont(None, 20)
+playerfund = pygame.font.SysFont(None, 30)
 
 #Setting Icon_____________________________________________________________
 icon = pygame.image.load("slime.png")
@@ -62,7 +67,8 @@ blue_mob = pygame.image.load(path.join(img_dir, "blue_monster.png")).convert()
 green_mob = pygame.image.load(path.join(img_dir, "green_monster.png")).convert()
 red_mob = pygame.image.load(path.join(img_dir, "red_monster.png")).convert()
 dark_mob = pygame.image.load(path.join(img_dir, "dark_monster.png")).convert()
-ice_mob = pygame.image.load(path.join(img_dir, "ice_monster.png")).convert()
+red_slimes = pygame.image.load(path.join(img_dir, "red_slime.png")).convert()
+green_slimes = pygame.image.load(path.join(img_dir, "green_slime.png")).convert()
 
 start_button = pygame.image.load(path.join(img_dir, "button.png")).convert()
 button_pressed = pygame.image.load(path.join(img_dir, "button_pressed.png")).convert()
@@ -202,21 +208,21 @@ class red_monster(enemy, pygame.sprite.Sprite):
     def update(self):
         if self.rect.centerx < 36 and self.speedy == 0.00001:
             self.speedx = 0
-            self.speedy = 1.2
+            self.speedy = 1.4
         if self.rect.centery > 198 and self.speedx == 0:
-            self.speedx = 1.2
+            self.speedx = 1.4
             self.speedy = 0.0001
         if self.rect.centerx > 670 and self.speedy == 0.0001:
             self.speedx = 0.0001
             self.speedy = 1.4
         if self.rect.centery > 340 and self.speedx == 0.0001:
-            self.speedx = -1.2
+            self.speedx = -1.4
             self.speedy = 0.000001
         if self.rect.centerx < 40 and self.speedy == 0.000001:
             self.speedx = 0.0000001
-            self.speedy = 1.2
+            self.speedy = 1.4
         if self.rect.centery > 438 and self.speedx == 0.0000001:
-            self.speedx = 1.2
+            self.speedx = 1.4
             self.speedy = 0
             
         if self.rect.centerx > 699 and self.rect.centery > 400:
@@ -245,21 +251,21 @@ class blue_monster(enemy, pygame.sprite.Sprite):
     def update(self):
         if self.rect.centerx < 36 and self.speedy == 0.00001:
             self.speedx = 0
-            self.speedy = 1.1
+            self.speedy = 1.2
         if self.rect.centery > 198 and self.speedx == 0:
             self.speedx = 1.2
             self.speedy = 0.0001
         if self.rect.centerx > 670 and self.speedy == 0.0001:
             self.speedx = 0.0001
-            self.speedy = 1.1
+            self.speedy = 1.2
         if self.rect.centery > 340 and self.speedx == 0.0001:
-            self.speedx = -1.1
+            self.speedx = -1.2
             self.speedy = 0.000001
         if self.rect.centerx < 40 and self.speedy == 0.000001:
             self.speedx = 0.0000001
-            self.speedy = 1.1
+            self.speedy = 1.2
         if self.rect.centery > 438 and self.speedx == 0.0000001:
-            self.speedx = 1.1
+            self.speedx = 1.2
             self.speedy = 0
             
         if self.rect.centerx > 699 and self.rect.centery > 400:
@@ -268,10 +274,6 @@ class blue_monster(enemy, pygame.sprite.Sprite):
             self.kill()
             
         if self.health <= 0:
-            redM = red_monster(self.rect.centerx, self.rect.centery, self.speedx, self.speedy, 2)
-            enemies.add(redM)
-            greenM = green_monster(self.rect.centerx -32, self.rect.centery, self.speedx, self.speedy, 1)
-            enemies.add(greenM)
             self.kill()
 
         if can_move == True:
@@ -294,21 +296,21 @@ class dark_monster(enemy, pygame.sprite.Sprite):
         
         if self.rect.centerx < 36 and self.speedy == 0.00001:
             self.speedx = 0
-            self.speedy = 1
+            self.speedy = 1.3
         if self.rect.centery > 198 and self.speedx == 0:
-            self.speedx = 1
+            self.speedx = 1.3
             self.speedy = 0.0001
         if self.rect.centerx > 670 and self.speedy == 0.0001:
             self.speedx = 0.0001
-            self.speedy = 1
+            self.speedy = 1.3
         if self.rect.centery > 340 and self.speedx == 0.0001:
-            self.speedx = -1
+            self.speedx = -1.3
             self.speedy = 0.000001
         if self.rect.centerx < 40 and self.speedy == 0.000001:
             self.speedx = 0.0000001
-            self.speedy = 1
+            self.speedy = 1.3
         if self.rect.centery > 438 and self.speedx == 0.0000001:
-            self.speedx = 1
+            self.speedx = 1.3
             self.speedy = 0
 
         if self.rect.centerx > 699 and self.rect.centery > 400:
@@ -327,12 +329,12 @@ class dark_monster(enemy, pygame.sprite.Sprite):
             self.rect.centerx += self.speedx
             self.rect.centery += self.speedy
 
-class ice_monster(enemy, pygame.sprite.Sprite):
+class red_slime(enemy, pygame.sprite.Sprite):
     def __init__(self, x, y, speedx, speedy, health):
         super().__init__(x, y, speedx, speedy, health)
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.transform.scale(ice_mob, (32, 32))
+        self.image = pygame.transform.scale(red_slimes, (32, 32))
         self.image.set_colorkey(BLUE)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.x
@@ -370,6 +372,55 @@ class ice_monster(enemy, pygame.sprite.Sprite):
             self.kill()
 
         if self.health <= 0:
+            self.kill()
+
+class green_slime(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        super().__init__(x, y, speedx, speedy, health)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(green_slimes, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self): # Set up all different conditions so no overlap occurs
+       # print("update")
+        
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1.5
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1.5
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1.5
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1.5
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1.5
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1.5
+            self.speedy = 0
+
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
+
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= self.health
+            self.kill()
+
+        if self.health <= 0:
+            redS = red_slime(self.rect.centerx, self.rect.centery, self.speedx, self.speedy, 2)
+            enemies.add(redS)
+            redS = red_slime(self.rect.centerx - 16, self.rect.centery, self.speedx, self.speedy, 2)
+            enemies.add(redS)
             self.kill()
         
 class icon(pygame.sprite.Sprite):
@@ -423,12 +474,23 @@ class dark_icon(icon, pygame.sprite.Sprite):
         self.rect.centerx = self.x
         self.rect.centery = self.y
 
-class ice_icon(icon, pygame.sprite.Sprite):
+class reds_icon(icon, pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(x, y)
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.transform.scale(ice_mob, (24, 24))
+        self.image = pygame.transform.scale(red_slimes, (24, 24))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+class greens_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(green_slimes, (24, 24))
         self.image.set_colorkey(BLUE)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.x
@@ -686,20 +748,23 @@ def addTowerLevel():
         towers.add(tower7)
 
 #Placing Icons
-icong = green_icon(130, 540)
-icons.add(icong)
+icong = green_icon(130, 540)    # Couldn't spawn it at specific levels since it can't define the icon variable
+icons.add(icong)        
 
-iconr = red_icon(180, 540)
+iconr = red_icon(125, 580)
 icons.add(iconr)
 
-iconb = blue_icon(230, 540)
+iconb = blue_icon(180, 540)
 icons.add(iconb)
 
-icond = dark_icon(280, 540)
+icond = dark_icon(175, 580)
 icons.add(icond)
 
-iconi = ice_icon(330, 540)
-icons.add(iconi)
+iconS = reds_icon(230, 540)
+icons.add(iconS)
+
+iconG = greens_icon(225, 580)
+icons.add(iconG)
 
 buttonStart = button(32, 550)
 buttons.add(buttonStart)
@@ -723,17 +788,21 @@ while running:
     clock.tick(FPS)
     dt = clock.tick(FPS)
     text_lives = myfont.render('Lives : %d' % lives, False, (RED))
-    text_monster1 = costfont.render('%d' % monster_count1, False, (0, 0, 0))
-    text_monster2 = costfont.render('%d' % monster_count2, False, (0, 0, 0))
-    text_monster3 = costfont.render("%d" % monster_count3, False, (0, 0, 0))
-    text_monster4 = costfont.render("%d" % monster_count4, False, (0, 0, 0))
-    text_monster5 = costfont.render("%d" % monster_count5, False, (0, 0, 0))
+    text_monster1 = costfont.render('%dx4' % monster_count1, False, (0, 0, 0))
+    text_monster2 = costfont.render('%dx2' % monster_count2, False, (0, 0, 0))
+    text_monster3 = costfont.render("%dx3" % monster_count3, False, (0, 0, 0))
+    text_monster4 = costfont.render("%dx3" % monster_count4, False, (0, 0, 0))
+    text_monster5 = costfont.render("%dx6" % monster_count5, False, (0, 0, 0))
+    text_monster6 = costfont.render("%dx3" % monster_count6, False, (0, 0, 0))
     
     text_cost1 = myfont.render('$%d' % monster_cost1, False, (0, 0, 0))
     text_cost2 = myfont.render('$%d' % monster_cost2, False, (0, 0, 0))
     text_cost3 = myfont.render('$%d' % monster_cost3, False, (0, 0, 0))
     text_cost4 = myfont.render('$%d' % monster_cost4, False, (0, 0, 0))
     text_cost5 = myfont.render('$%d' % monster_cost5, False, (0, 0, 0))
+    text_cost6 = myfont.render('$%d' % monster_cost6, False, (0, 0, 0))
+
+    player_fund = playerfund.render("$%d" % player_money, False, (GREEN))
     
     if not enemies:         # if list is empty
         can_move = False
@@ -750,7 +819,7 @@ while running:
 
     #Procesing Events~~~~~~~~~~~~~~
     
-    for event in pygame.event.get():
+    for event in pygame.event.get(): # Bug when monster is destroyed so is all bullets targeting said monster
         if event.type == pygame.QUIT:  
             running = False
 
@@ -758,39 +827,51 @@ while running:
             x, y = event.pos
             if icong.rect.collidepoint(x, y):
                 if can_add == True:
-                    greenM = green_monster(counter, 92, -1, 0.00001, 1)
-                    enemies.add(greenM)
-                    counter += 32
+                    for i in range(4):
+                        greenM = green_monster(counter, 92, -1, 0.00001, 1)
+                        enemies.add(greenM)
+                        counter += 32
                     monster_count1 += 1
                     addTowerLevel() #adds the towers needed when level is increased
-                    
             if iconr.rect.collidepoint(x, y):
                 if can_add == True:
-                    redM = red_monster(counter, 92, -1.2, 0.00001, 2)
-                    enemies.add(redM)
-                    counter += 32
+                    for i in range(2):
+                        redM = red_monster(counter, 92, -1.4, 0.00001, 2)
+                        enemies.add(redM)
+                        counter += 64
                     monster_count2 += 1
                     addTowerLevel() #adds the towers needed when level is increased
             if iconb.rect.collidepoint(x, y):
                 if can_add == True:
-                    blueM = blue_monster(counter, 92, -1.2, 0.00001, 1)
-                    enemies.add(blueM)
-                    counter += 21
+                    for i in range(3):
+                        blueM = blue_monster(counter, 92, -1.2, 0.00001, 1)
+                        enemies.add(blueM)
+                        counter += 21
                     monster_count3 += 1
                     addTowerLevel() #adds the towers needed when level is increased
             if icond.rect.collidepoint(x, y):
                 if can_add == True:
-                    darkM = dark_monster(counter, 92, -1, 0.00001, 3)
-                    enemies.add(darkM)
-                    counter += 32
+                    for i in range(3):
+                        darkM = dark_monster(counter, 92, -1, 0.00001, 3)
+                        enemies.add(darkM)
+                        counter += 64
                     monster_count4 += 1
                     addTowerLevel() #adds the towers needed when level is increased
-            if iconi.rect.collidepoint(x, y):
+            if iconS.rect.collidepoint(x, y):
                 if can_add == True:
-                    iceM = ice_monster(counter, 92, -1.5, 0.00001, 5)
-                    enemies.add(iceM)
-                    counter += 32
+                    for i in range(6):
+                        redS = red_slime(counter, 92, -1.5, 0.00001, 2)
+                        enemies.add(redS)
+                        counter += 64
                     monster_count5 += 1
+                    addTowerLevel() #adds the towers needed when level is increased
+            if iconG.rect.collidepoint(x, y):
+                if can_add == True:
+                    for i in range(3):
+                        greenS = green_slime(counter, 92, -1.5, 0.00001, 2)
+                        enemies.add(greenS)
+                        counter += 64
+                    monster_count6 += 1
                     addTowerLevel() #adds the towers needed when level is increased
                     
             if buttonStart.rect.collidepoint(x, y):
@@ -804,17 +885,20 @@ while running:
     screen.blit(tan_background, background_rect)
     screen.blit(background, background_rect)
     screen.blit(text_lives,(0,580))
-    screen.blit(text_monster1, (icong.rect.centerx + 8, icong.rect.centery + 8))
-    screen.blit(text_monster2, (iconr.rect.centerx + 8, iconr.rect.centery + 8))
-    screen.blit(text_monster3, (iconb.rect.centerx + 8, iconr.rect.centery + 8))
-    screen.blit(text_monster4, (icond.rect.centerx + 8, iconr.rect.centery + 8))
-    screen.blit(text_monster5, (iconi.rect.centerx + 8, iconr.rect.centery + 8))
+    screen.blit(text_monster1, (icong.rect.centerx, icong.rect.centery + 8))
+    screen.blit(text_monster2, (iconr.rect.centerx, iconr.rect.centery + 8))
+    screen.blit(text_monster3, (iconb.rect.centerx, iconb.rect.centery + 8))
+    screen.blit(text_monster4, (icond.rect.centerx, icond.rect.centery + 8))
+    screen.blit(text_monster5, (iconS.rect.centerx, iconS.rect.centery + 8))
+    screen.blit(text_monster6, (iconG.rect.centerx, iconG.rect.centery + 8))
     
     screen.blit(text_cost1, (icong.rect.centerx - 8, icong.rect.centery - 24))
     screen.blit(text_cost2, (iconr.rect.centerx - 8, iconr.rect.centery - 24))
-    screen.blit(text_cost3, (iconb.rect.centerx - 8, iconr.rect.centery - 24))
-    screen.blit(text_cost4, (icond.rect.centerx - 8, iconr.rect.centery - 24))
-    screen.blit(text_cost5, (iconi.rect.centerx - 8, iconr.rect.centery - 24))
+    screen.blit(text_cost3, (iconb.rect.centerx - 8, iconb.rect.centery - 24))
+    screen.blit(text_cost4, (icond.rect.centerx - 8, icond.rect.centery - 24))
+    screen.blit(text_cost5, (iconS.rect.centerx - 8, iconS.rect.centery - 24))
+    screen.blit(text_cost6, (iconG.rect.centerx - 8, iconG.rect.centery - 24))
+    screen.blit(player_fund, (400, 530))
     #COllisions__________________________________________
     enemyhits = pygame.sprite.groupcollide(bullets, enemies, False, False) 
     gameLoopPT1()
