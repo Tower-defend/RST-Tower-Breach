@@ -90,7 +90,7 @@ help_screen = pygame.transform.scale(help_screen, (570, 600))
 help_screen_rect = help_screen.get_rect()
 
 win_screen = pygame.image.load(path.join(img_dir, "winscreen.jpg")).convert()
-win_screen = pygame.transform.scale(help_screen, (1269, 600))
+win_screen = pygame.transform.scale(win_screen, (1269, 600))
 win_screen_rect = win_screen.get_rect()
 
 #Adding the different monster pngs
@@ -128,6 +128,7 @@ can_move = False
 can_add = True
 levelzero = True
 gameOver = False
+button = 1
 
 #Setting coordinates to variables so towers can be placed easier
 centerx = WIDTH/2    #x coordinate of the tank
@@ -852,6 +853,7 @@ while running:
     if not enemies:         # if list is empty
         can_move = False
         can_add = True
+        button = 1
         if levelzero == True:
             level += 1
             levelzero = False
@@ -960,14 +962,15 @@ while running:
                 else:
                     blem_sound.play()
             if buttonStart.rect.collidepoint(x, y):
-                can_move = True
-                can_add = False
-                levelzero = True
-                lives = 0
-                #lives += 10
-                player_money += 5 + int((level+0.3)*5) # Amount of money that the player has to spawn mobs
-                startclick_sound.play()
-                buttonStart.pressed()
+                if button == 1:
+                    button = 0
+                    can_move = True
+                    can_add = False
+                    levelzero = True
+                    lives += 10
+                    player_money += 5 + int((level+0.3)*5) # Amount of money that the player has to spawn mobs
+                    startclick_sound.play()
+                    buttonStart.pressed()
 
 
     #Background First ~~~~~~~~~~~~~~~~~~
@@ -1007,7 +1010,7 @@ while running:
     towers.draw(screen)
     bullets.draw(screen)
     screen.blit(help_screen, (699,0))
-    while lives <= 0:
+    if lives <= 0:
         pygame.mixer.music.stop()
         trumpet_sound.play()
         screen.blit(win_screen, background_rect)
@@ -1015,4 +1018,3 @@ while running:
     
 
 pygame.quit()
-
