@@ -1,0 +1,125 @@
+#Just PLacing the tower using sprites instead of just blitting images thus easier for collisions
+#Imports
+import pygame
+import random
+from os import path
+
+#Image Upload Path
+img_dir = path.join(path.dirname(__file__), 'img')
+
+#Defining Initialized Variables
+WIDTH = 699
+HEIGHT = 519
+FPS = 60
+
+# define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+
+# initialize pygame and create window
+pygame.init()
+pygame.mixer.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Tower Defence")
+clock = pygame.time.Clock()
+
+#Defining Classes and Methods
+class Towers(pygame.sprite.Sprite):
+    def __init__(self,x,y,s):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.s = s
+ 
+       
+        self.image = pygame.transform.scale(tower_img, (self.s,self.s))
+        self.image.set_colorkey(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    #def shoot(self):
+         
+        for i in range(8):
+            xx = i*20
+            bullet = ammos(self.rect.centerx + xx, self.rect.top + xx,self.rect.centerx + xx, self.rect.top + xx,5,10)
+            all_sprites.add(bullet)
+            ammos.add(bullet)
+#~~~~~~~~~~~~~~
+
+class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
+    def __init__(self, x, y, ogx, ogy, speed, size):
+        pygame.sprite.Sprite.__init__(self)
+#~~~~~~~~~~~~~~~~~~~~
+        self.x = x
+        self.y = y
+        self.ogx = ogx
+        self.ogy = ogy
+        self.speed = speed
+        self.size = size
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.image = pygame.Surface((10, 10))
+        self.image.fill(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self):
+        self.rect.centerx -= self.speed
+        self.rect.centery -= self.speed
+       # if self.x > self.ogx+self.radius or self.x < self.ogx -self.radius or self.y > self.ogy+self.radius or self.y < self.ogy -self.radius:
+           # self.x = self.ogx
+           # self.y = self.ogy
+
+#~~~~~~~~~~~~~~~~~~~~~
+#Loading Game Graphics
+        
+background = pygame.image.load(path.join(img_dir, "map2.png")).convert()
+background_rect = background.get_rect()
+tower_img = pygame.image.load(path.join(img_dir, "tank.png")).convert()
+
+xc = WIDTH/2
+yc = HEIGHT* 3/4  #
+s = 50 #scale of the tower (lengthx width cause square)
+speed = 5
+size = 10
+
+all_sprites = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+
+tower = Towers(xc,yc,s)
+all_sprites.add(tower)
+
+    
+#bullet = ammos(xc,yc,xc,yc,speed,size)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Game loop
+running = True
+while running:
+    # keep loop running at the right speed
+    clock.tick(FPS)
+    # Process input (events)
+    for event in pygame.event.get():
+        # check for closing window
+        if event.type == pygame.QUIT:
+            running = False
+    #hits = pygame.sprite.spritecollide(tower, ammo, False)
+    
+
+    # Update
+    all_sprites.update()
+
+    # Draw / render
+    screen.fill(BLACK)
+    screen.blit(background, background_rect)
+    all_sprites.draw(screen)
+    # *after* drawing everything, flip the display
+    pygame.display.flip()
+
+pygame.quit()
