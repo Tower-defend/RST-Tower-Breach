@@ -56,6 +56,7 @@ player_money = 5 # Amount of money that the player has to spawn mobs
 #Initializing and adjusting   font and size
 pygame.font.init()
 myfont = pygame.font.SysFont(None, 20)
+winfont = pygame.font.SysFont(None, 80)
 costfont = pygame.font.SysFont(None, 20)
 playerfund = pygame.font.SysFont(None, 30)
 
@@ -90,7 +91,6 @@ help_screen = pygame.transform.scale(help_screen, (570, 600))
 help_screen_rect = help_screen.get_rect()
 
 win_screen = pygame.image.load(path.join(img_dir, "winscreen.jpg")).convert()
-win_screen = pygame.transform.scale(win_screen, (1269, 600))
 win_screen_rect = win_screen.get_rect()
 
 #Adding the different monster pngs
@@ -846,6 +846,8 @@ while running:
     text_cost5 = myfont.render('$%d' % monster_cost5, False, (0, 0, 0))
     text_cost6 = myfont.render('$%d' % monster_cost6, False, (0, 0, 0))
 
+    win_wave = winfont.render('%d' % level, False, (255,255,255))
+
     player_fund = playerfund.render("%d" % player_money, False, (BLACK))
     text_level = playerfund.render("Wave: %d" % level, False, (BLACK))
 
@@ -968,7 +970,12 @@ while running:
                     can_add = False
                     levelzero = True
                     lives += 10
-                    player_money += 5 + int((level+0.3)*5) # Amount of money that the player has to spawn mobs
+                    if level > 7:
+                        player_money += 10 + level*7
+                    elif level > 12:
+                        player_money += 20 + level*10
+                    else:  
+                        player_money += 5 + int((level+0.3)*5) # Amount of money that the player has to spawn mobs
                     startclick_sound.play()
                     buttonStart.pressed()
 
@@ -1013,8 +1020,11 @@ while running:
     if lives <= 0:
         pygame.mixer.music.stop()
         trumpet_sound.play()
-        screen.blit(win_screen, background_rect)
+        screen = pygame.display.set_mode((960, 591)) #sets display to the variable
+        screen.blit(win_screen, (0,0))
+        screen.blit(win_wave, (450,430))        
     pygame.display.flip() #flip the display and draw on the back while the other side updates, for less laggy gameplay
     
 
 pygame.quit()
+
