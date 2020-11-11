@@ -29,12 +29,12 @@ YELLOW = (255, 255, 0)
 # initialize pygame and create window_________________________________________________________________________________
 pygame.init()
 pygame.mixer.init() #init sounds
-screen = pygame.display.set_mode((WIDTH, HEIGHT)) #sets display to the variable
+screen = pygame.display.set_mode((1269, 600)) #sets display to the variable
 pygame.display.set_caption("Tower Defence") #adds a caption
 clock = pygame.time.Clock() #create a clock function to keep speeds and frames constant
 
 #Creating Variables for the enemies_________________________________________________________________________________
-lives = 10
+lives = 5
 #Prints the amount of monsters to be spawned
 monster_count1 = 0
 monster_count2 = 0
@@ -72,6 +72,7 @@ hit_sound = pygame.mixer.Sound(path.join(snd_dir, 'Hit_Hurt2.wav'))
 monsterclick_sound = pygame.mixer.Sound(path.join(snd_dir, 'Blip_Select.wav'))
 startclick_sound = pygame.mixer.Sound(path.join(snd_dir, 'start.wav'))
 blem_sound = pygame.mixer.Sound(path.join(snd_dir, 'blem.wav'))
+trumpet_sound = pygame.mixer.Sound(path.join(snd_dir, 'trumpet.wav'))
 
 
 #________________Loading Graphics___________________________________
@@ -83,6 +84,14 @@ background_rect = background.get_rect()
 tan_background = pygame.image.load(path.join(img_dir, "wood1.jpg")).convert()
 tan_background = pygame.transform.scale(tan_background, (699, 600))
 tan_background_rect = tan_background.get_rect()
+
+help_screen = pygame.image.load(path.join(img_dir, "helpscreen.jpg")).convert()
+help_screen = pygame.transform.scale(help_screen, (570, 600))
+help_screen_rect = help_screen.get_rect()
+
+win_screen = pygame.image.load(path.join(img_dir, "winscreen.jpg")).convert()
+win_screen = pygame.transform.scale(help_screen, (1269, 600))
+win_screen_rect = win_screen.get_rect()
 
 #Adding the different monster pngs
 blue_mob = pygame.image.load(path.join(img_dir, "blue_monster.png")).convert()
@@ -548,14 +557,15 @@ class Towers(pygame.sprite.Sprite):
         self.rect.centery = self.y
         self.radius = 100       #sets the radius of each tower at 100 pixels
         self.timer = 0      #makes a timer for the shooting delay
-    def shoot(self,mousex,mousey,speed,size): #the shoot function whcih takes arguemtns tot where to target towars. The mousex and mousey actually represent the
+    def shoot(self,mousex,mousey,speed,size,damage): #the shoot function whcih takes arguemtns tot where to target towars. The mousex and mousey actually represent the
         #coordinates of the enemy in the target list at index (0)
         self.mousex = mousex
+        self.damage = damage
         self.mousey = mousey
         self.size = size
         self.speed = speed
         self.timer += dt #increments the timer using the fps so that the tower can shoot at a specific fire rate
-        bullet = ammos(self.rect.left,self.rect.centery,self.mousex,self.mousey,self.speed,self.size, 1) #calls the ammos function to actually create the bullet,
+        bullet = ammos(self.rect.left,self.rect.centery,self.mousex,self.mousey,self.speed,self.size, self.damage) #calls the ammos function to actually create the bullet,
         #asks for MANY arguments
         if self.timer >= self.attack_speed:
             self.timer -= self.attack_speed
@@ -622,7 +632,7 @@ def gameLoopPT1(): #the game loop to add certain towers when it reaches certain 
         if tower1Range:
             enemyx = target[0].rect.centerx #setts the cooordinates for the rarget
             enemyy = target[0].rect.centery
-            tower1.shoot(enemyx,enemyy,3,10) #(targetx,targety,bullet speed, bullet size)
+            tower1.shoot(enemyx,enemyy,4,10,1) #(targetx,targety,bullet speed, bullet size,damage)
         for e in target: #for enemies in the target list (enemies in the range)
             if enemyhits: #if its been hit, remove from the list cause you no longer need to target it
                 target.remove(e)
@@ -643,7 +653,7 @@ def gameLoopPT1(): #the game loop to add certain towers when it reaches certain 
             if tower2Range:
                 enemyx = target[0].rect.centerx
                 enemyy = target[0].rect.centery
-                tower2.shoot(enemyx,enemyy,3,10)
+                tower2.shoot(enemyx,enemyy,4,10,1)
             for e in target:
                 if enemyhits:
                     target.remove(e)
@@ -666,7 +676,7 @@ def gameLoopPT1(): #the game loop to add certain towers when it reaches certain 
             if tower3Range:
                 enemyx = target[0].rect.centerx
                 enemyy = target[0].rect.centery
-                tower3.shoot(enemyx,enemyy,4,30)
+                tower3.shoot(enemyx,enemyy,3,30,1)
             for e in target:
                 if enemyhits:
                     target.remove(e)
@@ -687,7 +697,7 @@ def gameLoopPT1(): #the game loop to add certain towers when it reaches certain 
             if tower4Range:
                 enemyx = target[0].rect.centerx
                 enemyy = target[0].rect.centery
-                tower4.shoot(enemyx,enemyy,speed,size)
+                tower4.shoot(enemyx,enemyy,5,5,2)
             for e in target:
                 if enemyhits:
                     target.remove(e)
@@ -708,7 +718,7 @@ def gameLoopPT1(): #the game loop to add certain towers when it reaches certain 
             if tower5Range:
                 enemyx = target[0].rect.centerx
                 enemyy = target[0].rect.centery
-                tower5.shoot(enemyx,enemyy,speed,size)
+                tower5.shoot(enemyx,enemyy,6,size,1)
             for e in target:
                 if enemyhits:
                     target.remove(e)
@@ -729,7 +739,7 @@ def gameLoopPT1(): #the game loop to add certain towers when it reaches certain 
             if tower6Range:
                 enemyx = target[0].rect.centerx
                 enemyy = target[0].rect.centery
-                tower6.shoot(enemyx,enemyy,speed,size)
+                tower6.shoot(enemyx,enemyy,6,size,5)
             for e in target:
                 if enemyhits:
                     target.remove(e)
@@ -750,7 +760,7 @@ def gameLoopPT1(): #the game loop to add certain towers when it reaches certain 
             if tower7Range:
                 enemyx = target[0].rect.centerx
                 enemyy = target[0].rect.centery
-                tower7.shoot(enemyx,enemyy,speed,size)
+                tower7.shoot(enemyx,enemyy,7,size,1)
             for e in target:
                 if enemyhits:
                     target.remove(e)
@@ -803,8 +813,8 @@ tower1 = Towers(column8,row1y,50,tower1_img,1*s)
 tower2 = Towers(column5,row1y,50,tower1_img,1*s)
 tower3 = Towers(500,row2y,60,tower3_img,1.5*s)
 tower4 = Towers(centerx,row3y,60,tower4_img,0.5*s)
-tower5 = Towers(400,row2y,60,tower5_img,0.3*s)
-tower6 = Towers(200,row1y,60,tower6_img,0.3*s)
+tower5 = Towers(400,row2y,60,tower5_img,0.5*s)
+tower6 = Towers(200,row1y,60,tower6_img,1.5*s)
 tower7 = Towers(200,row2y,60,tower7_img,0.1*s)
 
 #PLacing the first tower
@@ -836,7 +846,7 @@ while running:
     text_cost6 = myfont.render('$%d' % monster_cost6, False, (0, 0, 0))
 
     player_fund = playerfund.render("%d" % player_money, False, (BLACK))
-    text_level = playerfund.render("level: %d" % level, False, (BLACK))
+    text_level = playerfund.render("Wave: %d" % level, False, (BLACK))
 
     #Checking if gameplay can start or not
     if not enemies:         # if list is empty
@@ -863,7 +873,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:  #if you click at a certain icon then it preforms something. for the mob icons it adds a mob to the wave
             #if you press trhe start button the mobs start moving and the level is incremented
             #also plays a sound when you press the butotn to add a mob
-            print(level)
+            #print(level)
             x, y = event.pos
             if icong.rect.collidepoint(x, y):
                 if player_money >= 1:
@@ -953,9 +963,9 @@ while running:
                 can_move = True
                 can_add = False
                 levelzero = True
-                print(level)
-                lives += 10
-                player_money += 5 + level*5 # Amount of money that the player has to spawn mobs
+                lives = 0
+                #lives += 10
+                player_money += 5 + int((level+0.3)*5) # Amount of money that the player has to spawn mobs
                 startclick_sound.play()
                 buttonStart.pressed()
 
@@ -996,10 +1006,13 @@ while running:
     buttons.draw(screen)
     towers.draw(screen)
     bullets.draw(screen)
-    if gameOver == True:
-        pass
-        
+    screen.blit(help_screen, (699,0))
+    while lives <= 0:
+        pygame.mixer.music.stop()
+        trumpet_sound.play()
+        screen.blit(win_screen, background_rect)
     pygame.display.flip() #flip the display and draw on the back while the other side updates, for less laggy gameplay
     
 
 pygame.quit()
+
