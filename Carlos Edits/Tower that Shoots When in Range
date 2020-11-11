@@ -1,0 +1,224 @@
+#Just PLacing the tower using sprites instead of just blitting images thus easier for collisions
+#Imports
+import pygame
+import random
+import math
+from os import path
+
+#Image Upload Path
+img_dir = path.join(path.dirname(__file__), 'img')
+
+#Defining Initialized Variables
+WIDTH = 699
+HEIGHT = 519
+FPS = 60
+
+# define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+
+# initialize pygame and create window
+pygame.init()
+pygame.mixer.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Tower Defence")
+clock = pygame.time.Clock()
+
+#Defining Classes and Methods
+class dummy(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.centery = 50
+        self.rect.centerx = WIDTH/2
+        
+class Towers(pygame.sprite.Sprite):
+    def __init__(self,x,y,s):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.s = s
+        self.image = pygame.transform.scale(tower_img, (self.s,self.s))
+        self.image.set_colorkey(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+        self.radius = 50
+
+
+    def shoot(self, xspeed, yspeed):
+        bullet = ammos(self.rect.centerx, self.rect.top,self.rect.centerx, self.rect.top,xspeed,yspeed,10)
+        all_sprites.add(bullet)
+        bullets.add(bullet)
+#~~~~~~~~~~~~~~
+
+class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
+    def __init__(self, x, y, ogx, ogy, speedx, speedy, size):
+        pygame.sprite.Sprite.__init__(self)
+#~~~~~~~~~~~~~~~~~~~~
+        self.x = x
+        self.y = y
+        self.ogx = ogx
+        self.ogy = ogy
+        self.speedx = speedx
+        self.speedy = speedy
+        self.size = size
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.image = pygame.Surface((10, 10))
+        self.image.fill(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self):
+        self.rect.centerx -= self.speedx
+        self.rect.centery -= self.speedy
+        if self.rect.bottom < 0 or self.rect.top > 519 or self.rect.left > 699 or self.rect.right < 0:
+            self.kill()
+            print("dead")
+
+#~~~~~~~~~~~~~~~~~~~~~
+#Loading Game Graphics
+       
+background = pygame.image.load(path.join(img_dir, "map2.png")).convert()
+background_rect = background.get_rect()
+tower_img = pygame.image.load(path.join(img_dir, "tank.png")).convert()
+alieng = pygame.image.load("monster.png")    # Declares monster image
+lives = 150
+
+xc = WIDTH/2
+yc = HEIGHT* 3/4  #
+s = 50 #scale of the tower (lengthx width cause square)
+speed = 5
+size = 10
+
+#Defining the Calls
+dumb = dummy()
+tower = Towers(xc,yc,s)
+
+#Creating Sprite Groups
+all_sprites = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+towers = pygame.sprite.Group()
+
+
+all_sprites.add(tower)
+towers.add(tower)
+
+all_sprites.add(dumb)
+
+   
+#bullet = ammos(xc,yc,xc,yc,speed,size)
+
+class enemy():          # Class of all enemies
+    def __init__(self, x, y, speedx, speedy, health): # Method declares x, y cords + speed + health
+        self.x = x
+        self.y = y
+        self.speedx = speedx
+        self.speedy = speedy
+        self.health = health            # Declares x, y cords + speed + health
+        
+    def move(self, monster):
+        screen.blit(monster,(self.x, self.y))   # Blit the monster and set speeds
+        self.x += self.speedx
+        self.y += self.speedy
+
+    def direction(self): # Set up all different conditions so no overlap occurs
+        if self.x < 24 and self.speedy == 0.00001:
+            self.speedx = self.speedx * 0.00001
+            self.speedy = self.speedy * 100000
+        if self.y > 188 and self.speedx == -0.00001:
+            self.speedx = self.speedx * -100000
+            self.speedy = self.speedy * 0.0001
+        if self.x > 652 and self.speedy == 0.0001:
+            self.speedx = self.speedx * 0.0001
+            self.speedy = self.speedy * 10000
+        if self.y > 328 and self.speedx == 0.0001:
+            self.speedx = self.speedx * -10000
+            self.speedy = self.speedy * 0.000001
+        if self.x < 24 and self.speedy == 0.000001:
+            self.speedx = self.speedx * 0.0000001
+            self.speedy = self.speedy * 1000000
+        if self.y > 430 and self.speedx == -0.0000001:
+            self.speedx = self.speedx * -10000000
+            self.speedy = 0
+            
+enemies = []
+target = []
+
+def wave1():
+    wavelen = 50
+    counter = 800
+    for i in range(wavelen): # For amount of monsters in wave
+        e1 = enemy(counter, 78, -1, 0.00001, 1) # Declares object of enemy at end of map
+        enemies.append(e1) # Puts object into a list
+        counter += 32 # increases x cord further off the map
+        
+wave1()
+xdistance = 0
+ydistance = 0
+xspeed = 0
+yspeed = 0
+SPEED = 5
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Game loop
+
+   
+#screen.blit(background, background_rect)
+running = True
+while running:
+
+    # keep loop running at the right speed
+    clock.tick(FPS)
+    # Process input (events)
+    for event in pygame.event.get():
+        # check for closing window
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                tower.shoot()
+
+    #hits = pygame.sprite.spritecollide(tower, ammo, False)
+   
+
+    # Update
+    all_sprites.update()
+    screen.blit(background, background_rect)
+
+    hits = pygame.sprite.spritecollide(dumb, bullets, True)
+    if not hits:
+        pass
+    elif hits:
+        print("hit")
+
+    for e1 in enemies[:]: # For enemies in copy of list 
+        e1.move(alieng) # Blit and makes enemies move from method
+        enemy.direction(e1) # Declares enemy's direction from method
+        if e1.y > 400 and e1.x > 666: # Checks if enemy is at the end of path
+            lives -= 1 # Decreses lives
+            enemies.remove(e1) # Removes enemy from list
+        if math.sqrt((e1.x - tower.x)**2 + (e1.y - tower.y)**2) < 200: # Checks range between enemy and tower
+            target.append(e1)
+            xdistance = target[0].x - tower.x  # Find x distance and y dis
+            ydistance = target[0].y - tower.y
+            angle = math.atan2(xdistance, ydistance) # Find angle created
+            xspeed = SPEED * math.cos(angle) # declare the x and y speeds
+            yspeed = SPEED * math.sin(angle)
+            tower.shoot(xspeed, yspeed)
+    
+                
+    # Draw / render
+    #
+    all_sprites.draw(screen)
+    # *after* drawing everything, flip the display
+    pygame.display.flip()
+
+pygame.quit()
