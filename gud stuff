@@ -1,20 +1,20 @@
-# Imports______________________________________________________
-import pygame   
+# Imports
+import pygame  
 import random
 import math
 import time
 from os import path
 
-#Image Upload Path__________________________________________________
+#Image Upload Path
 img_dir = path.join(path.dirname(__file__), 'img')
 
-#Defining Initialized Variables_____________________________________________
+#Defining Initialized Variables
 
 WIDTH = 699
 HEIGHT = 600
 FPS = 500
 
-# define colors________________________________________________________
+# define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -22,15 +22,29 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
-# initialize pygame and create window____________________________________
+# initialize pygame and create window
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Tower Defence")
 clock = pygame.time.Clock()
+
+lives = 150
+monster_count1 = 0
+monster_count2 = 0
+monster_count3 = 0
+monster_count4 = 0
+monster_count5 = 0
+
+monster_cost1 = 0
+monster_cost2 = 1
+monster_cost3 = 2
+monster_cost4 = 3
+monster_cost5 = 4
+
 pygame.font.init()
-myfont = pygame.font.SysFont(None, 30)
-#lives = 150
+myfont = pygame.font.SysFont(None, 24)
+costfont = pygame.font.SysFont(None, 24)
 
 #Setting Icon_____________________________________________________________
 icon = pygame.image.load("slime.png")
@@ -44,37 +58,60 @@ tan_background = pygame.image.load(path.join(img_dir, "wood1.jpg")).convert()
 tan_background = pygame.transform.scale(tan_background, (699, 600))
 tan_background_rect = tan_background.get_rect()
 
-aliengreen_img = pygame.image.load(path.join(img_dir, "monster.png")).convert()
+blue_mob = pygame.image.load(path.join(img_dir, "blue_monster.png")).convert()
+green_mob = pygame.image.load(path.join(img_dir, "green_monster.png")).convert()
+red_mob = pygame.image.load(path.join(img_dir, "red_monster.png")).convert()
+dark_mob = pygame.image.load(path.join(img_dir, "dark_monster.png")).convert()
+ice_mob = pygame.image.load(path.join(img_dir, "ice_monster.png")).convert()
 
 start_button = pygame.image.load(path.join(img_dir, "button.png")).convert()
 button_pressed = pygame.image.load(path.join(img_dir, "button_pressed.png")).convert()
 
-tower_img = pygame.image.load(path.join(img_dir, "tank.png")).convert()
+tower1_img = pygame.image.load(path.join(img_dir, "001-tank.png")).convert()
+tower2_img = pygame.image.load(path.join(img_dir, "002-tank.png")).convert()
+tower3_img = pygame.image.load(path.join(img_dir, "003-tank.png")).convert()
+tower4_img = pygame.image.load(path.join(img_dir, "004-tank.png")).convert()
+tower5_img = pygame.image.load(path.join(img_dir, "005-tank.png")).convert()
+tower6_img = pygame.image.load(path.join(img_dir, "006-tank.png")).convert()
+tower7_img = pygame.image.load(path.join(img_dir, "007-tank.png")).convert()
+
 #_____________Defining Variables for Classes________________________
 counter = 800
-lives = 150
 can_move = False
 can_add = True
 
-xc = WIDTH/2    #x coordinate of the tank
-yc = HEIGHT* 1/4  #y coordinate of the tank
+centerx = WIDTH/2    #x coordinate of the tank
+row1y = HEIGHT* 1/4 -10  #y coordinate of the tank
+row2y = HEIGHT* 2/4 - 35  #y coordinate of the tank
+row3y = HEIGHT* 3/4 -65 #y coordinate of the tank
+column1 = WIDTH/11
+column2 = 2*WIDTH/11
+column3 = 3*WIDTH/11
+column4 = 4*WIDTH/11
+column5 = 5*WIDTH/11
+column6 = 6*WIDTH/11
+column7 = 7*WIDTH/11
+column8 = 8*WIDTH/11
+column9 = 9*WIDTH/11
+column10 = 10*WIDTH/11
+
 s = 50 #scale of the tower (lengthx width cause square)
-speed = 1.5 #speed of bullet
+speed = 5
+#speed of bullet
 size = 10 #size of bullet (square)
 
-
+level = 0
 #_______________________________________________________
 #Defining the Calls
 #Creating Sprite Groups
 icons = pygame.sprite.Group()
 buttons = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
+
 towers = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 
 target = []
-
-
 
 #__________________Defining Classes__________________________________________
 class button(pygame.sprite.Sprite):
@@ -88,8 +125,11 @@ class button(pygame.sprite.Sprite):
         self.rect.centerx = self.x
         self.rect.centery = self.y
 
+    def start(self):
+        self.image = pygame.transform.scale(start_button, (64, 32))
+        self.image.set_colorkey(WHITE)
+
     def pressed(self):
-        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.transform.scale(button_pressed, (64, 32))
         self.image.set_colorkey(WHITE)
         
@@ -103,21 +143,20 @@ class enemy(pygame.sprite.Sprite):
         self.health = health
         self.image = None
 
-class greenalien(enemy, pygame.sprite.Sprite):
+class green_monster(enemy, pygame.sprite.Sprite):
     def __init__(self, x, y, speedx, speedy, health):
         super().__init__(x, y, speedx, speedy, health)
         pygame.sprite.Sprite.__init__(self)
         
-        self.image = pygame.transform.scale(aliengreen_img, (32,32))
-        self.image.set_colorkey(WHITE)
+        self.image = pygame.transform.scale(green_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.x
         self.rect.centery = self.y
-        self.collidex = 0
-        self.collidey = 0
         
     def update(self): # Set up all different conditions so no overlap occurs
-
+       # print("update")
+        
         if self.rect.centerx < 36 and self.speedy == 0.00001:
             self.speedx = 0
             self.speedy = 1
@@ -139,7 +178,7 @@ class greenalien(enemy, pygame.sprite.Sprite):
             
         if self.rect.centerx > 699 and self.rect.centery > 400:
             global lives # Declares lives as global variable 
-            lives -= 1
+            lives -= self.health
             self.health = 0
             
         if self.health <= 0:
@@ -148,28 +187,267 @@ class greenalien(enemy, pygame.sprite.Sprite):
         if can_move == True:
             self.rect.centerx += self.speedx
             self.rect.centery += self.speedy
-    def xcoordinates(self):
-        print("yes")
-        self.collidex = self.rect.centerx
-        print(self.collidex)
-        pygame.quit()
-        #return(self.collidex)
-        
-class icon(pygame.sprite.Sprite):
-    pass
-
-class Towers(pygame.sprite.Sprite):
-    def __init__(self,x,y,s):
+            
+class red_monster(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
         pygame.sprite.Sprite.__init__(self)
-        self.x = x
-        self.y = y
-        self.s = s
-        self.image = pygame.transform.scale(tower_img, (self.s,self.s))
-        self.image.set_colorkey(WHITE)
+        super().__init__(x, y, speedx, speedy, health)
+        
+        self.image = pygame.transform.scale(red_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.x
         self.rect.centery = self.y
-        self.radius = 200
+        
+    def update(self):
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1.2
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1.2
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1.4
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1.2
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1.2
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1.2
+            self.speedy = 0
+            
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= self.health
+            self.kill()
+            
+        if self.health <= 0:
+            self.kill()
+
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
+
+class blue_monster(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        super().__init__(x, y, speedx, speedy, health)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(blue_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self):
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1.1
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1.2
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1.1
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1.1
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1.1
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1.1
+            self.speedy = 0
+            
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= self.health
+            self.kill()
+            
+        if self.health <= 0:
+            redM = red_monster(self.rect.centerx, self.rect.centery, self.speedx, self.speedy, 2)
+            enemies.add(redM)
+            greenM = green_monster(self.rect.centerx -32, self.rect.centery, self.speedx, self.speedy, 1)
+            enemies.add(greenM)
+            self.kill()
+
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
+
+class dark_monster(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        super().__init__(x, y, speedx, speedy, health)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(dark_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+    def update(self): # Set up all different conditions so no overlap occurs
+       # print("update")
+        
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1
+            self.speedy = 0
+
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= self.health
+            self.kill()
+
+        if self.health <= 0:
+            redM = red_monster(self.rect.centerx, self.rect.centery, self.speedx, self.speedy, 2)
+            enemies.add(redM)
+            blueM = blue_monster(self.rect.centerx - 32, self.rect.centery, self.speedx, self.speedy, 1)
+            enemies.add(blueM)
+            self.kill()
+
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
+
+class ice_monster(enemy, pygame.sprite.Sprite):
+    def __init__(self, x, y, speedx, speedy, health):
+        super().__init__(x, y, speedx, speedy, health)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(ice_mob, (32, 32))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+        
+    def update(self): # Set up all different conditions so no overlap occurs
+       # print("update")
+        
+        if self.rect.centerx < 36 and self.speedy == 0.00001:
+            self.speedx = 0
+            self.speedy = 1.5
+        if self.rect.centery > 198 and self.speedx == 0:
+            self.speedx = 1.5
+            self.speedy = 0.0001
+        if self.rect.centerx > 670 and self.speedy == 0.0001:
+            self.speedx = 0.0001
+            self.speedy = 1.5
+        if self.rect.centery > 340 and self.speedx == 0.0001:
+            self.speedx = -1.5
+            self.speedy = 0.000001
+        if self.rect.centerx < 40 and self.speedy == 0.000001:
+            self.speedx = 0.0000001
+            self.speedy = 1.5
+        if self.rect.centery > 438 and self.speedx == 0.0000001:
+            self.speedx = 1.5
+            self.speedy = 0
+
+        if can_move == True:
+            self.rect.centerx += self.speedx
+            self.rect.centery += self.speedy
+
+        if self.rect.centerx > 699 and self.rect.centery > 400:
+            global lives # Declares lives as global variable 
+            lives -= self.health
+            self.kill()
+
+        if self.health <= 0:
+            self.kill()
+        
+class icon(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.image = None
+
+class green_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+        
+        self.image = pygame.transform.scale(green_mob, (24, 24))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+class red_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(red_mob, (24, 24))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+class blue_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(blue_mob, (24, 24))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+        
+class dark_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(dark_mob, (24, 24))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+class ice_icon(icon, pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.transform.scale(ice_mob, (24, 24))
+        self.image.set_colorkey(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+
+class Towers(pygame.sprite.Sprite):
+    def __init__(self,x,y,s,sprite):
+        pygame.sprite.Sprite.__init__(self)
+        self.sprite = sprite
+        self.x = x
+        self.y = y
+        self.s = s
+        self.image = pygame.transform.scale(self.sprite, (self.s,self.s))
+        self.image.set_colorkey(WHITE)
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.x
+        self.rect.centery = self.y
+        self.radius = 100
         self.timer = 0
         self.attack_speed = 300 #.5 seconds delay ebtween shots
     def shoot(self,mousex,mousey,speed,size):
@@ -178,7 +456,7 @@ class Towers(pygame.sprite.Sprite):
         self.size = size
         self.speed = speed
         self.timer += dt
-        bullet = ammos(self.rect.centerx,self.rect.top,self.mousex,self.mousey,self.speed,self.size)
+        bullet = ammos(self.rect.left,self.rect.centery,self.mousex,self.mousey,self.speed,self.size, 1)
         if self.timer >= self.attack_speed:
             #print("yes")
             self.timer -= self.attack_speed
@@ -187,8 +465,9 @@ class Towers(pygame.sprite.Sprite):
 
 
 class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
-    def __init__(self, x, y, mousex, mousey, speed, size):
+    def __init__(self, x, y, mousex, mousey, speed, size, damage):
         pygame.sprite.Sprite.__init__(self)
+        self.damage = damage
         self.x = x
         self.y = y
         self.size = size
@@ -226,19 +505,216 @@ class ammos(pygame.sprite.Sprite):     #Class of all ammo/bullets/owie thingies
         
         if self.rect.bottom < 0 or self.rect.top > 519 or self.rect.left > 699 or self.rect.right < 0:
             self.kill()
-            #print("dead")  
+            #print("dead") 
 
-#Placing Tower
-tower = Towers(xc,yc,s)
-towers.add(tower)
+def gameLoopPT1():
+    try:
+        tower1Range = pygame.sprite.spritecollide(tower1, enemies, False, pygame.sprite.collide_circle)
+        if enemyhits:
+             for e in enemies:   
+                for b in bullets:
+                    e.health -= b.damage
+                    bullets.remove(b)
+                    #print("owie")       
+        for i in enemies:
+            #if enemyhits:
+                #i.health -= 
+            if tower1Range: 
+                    target.append(i)
+        if tower1Range:
+            enemyx = target[0].rect.centerx
+            enemyy = target[0].rect.centery
+            tower1.shoot(enemyx,enemyy,1,10) #(targetx,targety,bullet speed, bullet size)
+        for e in target:
+            if enemyhits:
+                target.remove(e)
+            if not tower1Range:
+                target.remove(e)
+    #________________________________________________________________
+        if level >= 2:
+            tower2Range = pygame.sprite.spritecollide(tower2, enemies, False, pygame.sprite.collide_circle)
+            if enemyhits:
+                 for e in enemies:   
+                    for b in bullets:
+                        e.health -= b.damage
+                        bullets.remove(b)
+                        #print("owie")       
+            for i in enemies:
+                if tower2Range: 
+                        target.append(i)
+            if tower2Range:
+                enemyx = target[0].rect.centerx
+                enemyy = target[0].rect.centery
+                tower2.shoot(enemyx,enemyy,1,10)
+            for e in target:
+                if enemyhits:
+                    target.remove(e)
+                if not tower2Range:
+                    target.remove(e)
+                    
+    #________________________________________________________________
+        if level >= 3:
+            tower3Range = pygame.sprite.spritecollide(tower3, enemies, False, pygame.sprite.collide_circle)
+            if enemyhits:
+                 for e in enemies:   
+                    for b in bullets:
+                        e.health -= b.damage
+                        bullets.remove(b)
+                        #print("owie")       
+            for i in enemies:
+                #if enemyhits:
+                    #i.health -= 
+                if tower3Range: 
+                        target.append(i)
+            if tower3Range:
+                enemyx = target[0].rect.centerx
+                enemyy = target[0].rect.centery
+                tower3.shoot(enemyx,enemyy,speed,size)
+            for e in target:
+                if enemyhits:
+                    target.remove(e)
+                if not tower3Range:
+                    target.remove(e)
+    #________________________________________________________________
+        if level >= 4:
+            tower4Range = pygame.sprite.spritecollide(tower4, enemies, False, pygame.sprite.collide_circle)
+            if enemyhits:
+                 for e in enemies:   
+                    for b in bullets:
+                        e.health -= b.damage
+                        bullets.remove(b)
+                        #print("owie")       
+            for i in enemies:
+                #if enemyhits:
+                    #i.health -= 
+                if tower4Range: 
+                        target.append(i)
+            if tower4Range:
+                enemyx = target[0].rect.centerx
+                enemyy = target[0].rect.centery
+                tower4.shoot(enemyx,enemyy,speed,size)
+            for e in target:
+                if enemyhits:
+                    target.remove(e)
+                if not tower4Range:
+                    target.remove(e)
+    #________________________________________________________________
+        if level >= 5:
+            tower5Range = pygame.sprite.spritecollide(tower5, enemies, False, pygame.sprite.collide_circle)
+            if enemyhits:
+                 for e in enemies:   
+                    for b in bullets:
+                        e.health -= b.damage
+                        bullets.remove(b)
+                        #print("owie")       
+            for i in enemies:
+                #if enemyhits:
+                    #i.health -= 
+                if tower5Range: 
+                        target.append(i)
+            if tower5Range:
+                enemyx = target[0].rect.centerx
+                enemyy = target[0].rect.centery
+                tower5.shoot(enemyx,enemyy,speed,size)
+            for e in target:
+                if enemyhits:
+                    target.remove(e)
+                if not tower5Range:
+                    target.remove(e)
+    #________________________________________________________________
+        if level >= 6:
+            tower6Range = pygame.sprite.spritecollide(tower6, enemies, False, pygame.sprite.collide_circle)
+            if enemyhits:
+                 for e in enemies:   
+                    for b in bullets:
+                        e.health -= b.damage
+                        bullets.remove(b)
+                        #print("owie")       
+            for i in enemies:
+                #if enemyhits:
+                    #i.health -= 
+                if tower6Range: 
+                        target.append(i)
+            if tower6Range:
+                enemyx = target[0].rect.centerx
+                enemyy = target[0].rect.centery
+                tower6.shoot(enemyx,enemyy,speed,size)
+            for e in target:
+                if enemyhits:
+                    target.remove(e)
+                if not tower6Range:
+                    target.remove(e)
+    #________________________________________________________________
+        if level >= 7:
+            tower7Range = pygame.sprite.spritecollide(tower7, enemies, False, pygame.sprite.collide_circle)
+            if enemyhits:
+                 for e in enemies:   
+                    for b in bullets:
+                        e.health -= b.damage
+                        bullets.remove(b)
+                        #print("owie")       
+            for i in enemies:
+                #if enemyhits:
+                    #i.health -= 
+                if tower7Range: 
+                        target.append(i)
+            if tower7Range:
+                enemyx = target[0].rect.centerx
+                enemyy = target[0].rect.centery
+                tower7.shoot(enemyx,enemyy,speed,size)
+            for e in target:
+                if enemyhits:
+                    target.remove(e)
+                if not tower7Range:
+                    target.remove(e)
+    except Exception as ex:
+        pass
 
-#Extra Variables idk about__________________________________________
-icong = greenalien(550, 550, 0, 0, 1)
+def addTowerLevel():
+    #print(level)
+    if level >= 1:
+        towers.add(tower2)
+    if level >= 2:
+        towers.add(tower3)
+    if level >= 3:
+        towers.add(tower4)
+    if level >= 4:
+        towers.add(tower5)
+    if level >= 5:
+        towers.add(tower6)
+    if level >= 6:
+        towers.add(tower7)
+
+#Placing Icons
+icong = green_icon(130, 540)
 icons.add(icong)
+
+iconr = red_icon(180, 540)
+icons.add(iconr)
+
+iconb = blue_icon(230, 540)
+icons.add(iconb)
+
+icond = dark_icon(280, 540)
+icons.add(icond)
+
+iconi = ice_icon(330, 540)
+icons.add(iconi)
 
 buttonStart = button(32, 550)
 buttons.add(buttonStart)
 
+#Defining TOwers
+tower1 = Towers(column8,row1y,50,tower1_img)
+tower2 = Towers(column5,row1y,50,tower1_img)
+tower3 = Towers(500,row2y,60,tower3_img)
+tower4 = Towers(centerx,row3y,60,tower4_img)
+tower5 = Towers(400,row2y,60,tower5_img)
+tower6 = Towers(200,row1y,60,tower6_img)
+tower7 = Towers(200,row2y,60,tower7_img)
+
+#PLacing the first tower
+towers.add(tower1)
 
 #_________________GAME LOOP___________________________________
 running = True
@@ -246,35 +722,81 @@ running = True
 while running:
     clock.tick(FPS)
     dt = clock.tick(FPS)
-    text_lives = myfont.render('Lives : %d' % lives, False, (0, 0, 0))
-    mousex, mousey = pygame.mouse.get_pos()
+    text_lives = myfont.render('Lives : %d' % lives, False, (RED))
+    text_monster1 = costfont.render('%d' % monster_count1, False, (0, 0, 0))
+    text_monster2 = costfont.render('%d' % monster_count2, False, (0, 0, 0))
+    text_monster3 = costfont.render("%d" % monster_count3, False, (0, 0, 0))
+    text_monster4 = costfont.render("%d" % monster_count4, False, (0, 0, 0))
+    text_monster5 = costfont.render("%d" % monster_count5, False, (0, 0, 0))
     
-    if not enemies:
+    text_cost1 = myfont.render('$%d' % monster_cost1, False, (0, 0, 0))
+    text_cost2 = myfont.render('$%d' % monster_cost2, False, (0, 0, 0))
+    text_cost3 = myfont.render('$%d' % monster_cost3, False, (0, 0, 0))
+    text_cost4 = myfont.render('$%d' % monster_cost4, False, (0, 0, 0))
+    text_cost5 = myfont.render('$%d' % monster_cost5, False, (0, 0, 0))
+    
+    if not enemies:         # if list is empty
         can_move = False
         can_add = True
         counter = 800
+        buttonStart.start()
+        monster_count1 = 0
+        monster_count2 = 0
+        monster_count3 = 0
+        monster_count4 = 0
+        monster_count5 = 0
+        for i in target:
+            target.remove(i)
 
-    #Procesing Events_____________________________________
+    #Procesing Events~~~~~~~~~~~~~~
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  
             running = False
-        #if event.type == pygame.KEYDOWN:
-            #if event.key == pygame.K_SPACE:
-                #tower.shoot(mousex,mousey,speed,size)
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
-            print(x, y)
             if icong.rect.collidepoint(x, y):
                 if can_add == True:
-                    alieng = greenalien(counter, 92, -1, 0.00001, 1)
-                    enemies.add(alieng)
+                    greenM = green_monster(counter, 92, -1, 0.00001, 1)
+                    enemies.add(greenM)
                     counter += 32
+                    monster_count1 += 1
+                    addTowerLevel() #adds the towers needed when level is increased
+                    
+            if iconr.rect.collidepoint(x, y):
+                if can_add == True:
+                    redM = red_monster(counter, 92, -1.2, 0.00001, 2)
+                    enemies.add(redM)
+                    counter += 32
+                    monster_count2 += 1
+                    addTowerLevel() #adds the towers needed when level is increased
+            if iconb.rect.collidepoint(x, y):
+                if can_add == True:
+                    blueM = blue_monster(counter, 92, -1.2, 0.00001, 1)
+                    enemies.add(blueM)
+                    counter += 21
+                    monster_count3 += 1
+                    addTowerLevel() #adds the towers needed when level is increased
+            if icond.rect.collidepoint(x, y):
+                if can_add == True:
+                    darkM = dark_monster(counter, 92, -1, 0.00001, 3)
+                    enemies.add(darkM)
+                    counter += 32
+                    monster_count4 += 1
+                    addTowerLevel() #adds the towers needed when level is increased
+            if iconi.rect.collidepoint(x, y):
+                if can_add == True:
+                    iceM = ice_monster(counter, 92, -1.5, 0.00001, 5)
+                    enemies.add(iceM)
+                    counter += 32
+                    monster_count5 += 1
+                    addTowerLevel() #adds the towers needed when level is increased
                     
             if buttonStart.rect.collidepoint(x, y):
                 can_move = True
                 can_add = False
-
+                level += 1
                 buttonStart.pressed()
 
 
@@ -282,23 +804,20 @@ while running:
     screen.blit(tan_background, background_rect)
     screen.blit(background, background_rect)
     screen.blit(text_lives,(0,580))
+    screen.blit(text_monster1, (icong.rect.centerx + 8, icong.rect.centery + 8))
+    screen.blit(text_monster2, (iconr.rect.centerx + 8, iconr.rect.centery + 8))
+    screen.blit(text_monster3, (iconb.rect.centerx + 8, iconr.rect.centery + 8))
+    screen.blit(text_monster4, (icond.rect.centerx + 8, iconr.rect.centery + 8))
+    screen.blit(text_monster5, (iconi.rect.centerx + 8, iconr.rect.centery + 8))
     
-    #Collisions________________________________________
-    enemyhits = pygame.sprite.groupcollide(bullets, enemies, True, True)
-    towerRange = pygame.sprite.groupcollide(towers, enemies, False, False, pygame.sprite.collide_circle)
-    for i in enemies:
-        if towerRange:
-            target.append(i)
-    if towerRange:
-        enemyx = target[0].rect.centerx
-        enemyy = target[0].rect.centery
-        tower.shoot(enemyx,enemyy,speed,size)
-    for e in target:
-        if enemyhits:
-            target.remove(e)
-        if not towerRange:
-            target.remove(e)
-
+    screen.blit(text_cost1, (icong.rect.centerx - 8, icong.rect.centery - 24))
+    screen.blit(text_cost2, (iconr.rect.centerx - 8, iconr.rect.centery - 24))
+    screen.blit(text_cost3, (iconb.rect.centerx - 8, iconr.rect.centery - 24))
+    screen.blit(text_cost4, (icond.rect.centerx - 8, iconr.rect.centery - 24))
+    screen.blit(text_cost5, (iconi.rect.centerx - 8, iconr.rect.centery - 24))
+    #COllisions__________________________________________
+    enemyhits = pygame.sprite.groupcollide(bullets, enemies, False, False) 
+    gameLoopPT1()
     
     #~~~~~Update~~~~~~~~~~~~~    screen.blit(background, background_rect)
     enemies.update()
