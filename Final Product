@@ -30,7 +30,7 @@ YELLOW = (255, 255, 0)
 pygame.init()
 pygame.mixer.init() #init sounds
 screen = pygame.display.set_mode((1269, 600)) #sets display to the variable
-pygame.display.set_caption("Tower Defence") #adds a caption
+pygame.display.set_caption("Castle Breach") #adds a caption
 clock = pygame.time.Clock() #create a clock function to keep speeds and frames constant
 
 #Creating Variables for the enemies_________________________________________________________________________________
