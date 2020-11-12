@@ -504,7 +504,6 @@ while running:
     text_cost6 = myfont.render('$%d' % monster_cost6, False, (0, 0, 0))
 
     player_fund = playerfund.render("%d" % player_money, False, (BLACK))
-    text_level = playerfund.render("Wave: %d" % level, False, (BLACK))
     
     if not enemies:         # if list is empty
         can_move = False
@@ -612,7 +611,6 @@ while running:
     screen.blit(text_cost5, (iconS.rect.centerx - 8, iconS.rect.centery - 24))
     screen.blit(text_cost6, (iconG.rect.centerx - 8, iconG.rect.centery - 24))
     screen.blit(player_fund, (400, 530))
-    screen.blit(text_level, (380, 560))
     #~~~~~Update~~~~~~~~~~~~~    screen.blit(background, background_rect)
     enemies.update()
     buttons.update()
