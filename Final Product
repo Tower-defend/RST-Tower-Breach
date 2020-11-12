@@ -866,6 +866,7 @@ while running:
         monster_count3 = 0
         monster_count4 = 0
         monster_count5 = 0
+        monster_count6 = 0
         for i in target: #for instances in the list
             target.remove(i) #essencially means empty the list at teh end of each wave/level
 
