@@ -45,6 +45,8 @@ monster_cost4 = 25
 monster_cost5 = 35
 monster_cost6 = 48
 
+button = 1
+
 player_money = 5 # Amount of money that the player has to spawn mobs
 
 pygame.font.init()
@@ -589,7 +591,6 @@ while running:
                     can_move = True
                     can_add = False
                     lives += 10
-                    player_money += 5 + int((level+0.3)*5) # Amount of money that the player has to spawn mobs
                     buttonStart.pressed()
 
 
@@ -597,7 +598,6 @@ while running:
     screen.blit(tan_background, background_rect)
     screen.blit(background, background_rect)
     screen.blit(text_lives,(0,580))
-    screen.blit(elixerimg,(370,520))
     screen.blit(text_monster1, (icong.rect.centerx, icong.rect.centery + 8))
     screen.blit(text_monster2, (iconr.rect.centerx, iconr.rect.centery + 8))
     screen.blit(text_monster3, (iconb.rect.centerx, iconb.rect.centery + 8))
