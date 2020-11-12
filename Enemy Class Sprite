@@ -35,6 +35,7 @@ monster_count2 = 0
 monster_count3 = 0
 monster_count4 = 0
 monster_count5 = 0
+monster_count6 = 0
 
 #Prints the cost of each monster
 monster_cost1 = 1
